@@ -77,19 +77,19 @@ export const constantRoutes = [
       {
         path: 'order',
         name: 'Order',
-        component: () => import('@/views/order/index'),
+        component: () => import('@/views/shopOrder/index'),
         meta: { title: '订单管理', icon: 'table' }
       },
       {
         path: 'collection',
         name: 'Collection',
-        component: () => import('@/views/collection/index'),
+        component: () => import('@/views/shopCollection/index'),
         meta: { title: '收藏列表', icon: 'table' }
       },
       {
         path: 'cart',
         name: 'Cart',
-        component: () => import('@/views/cart/index'),
+        component: () => import('@/views/shopCart/index'),
         meta: { title: '购物车', icon: 'tree' }
       }
     ]
@@ -105,25 +105,25 @@ export const constantRoutes = [
       {
         path: 'user-table',
         name: 'UserTable',
-        component: () => import('@/views/userTable/index'),
+        component: () => import('@/views/sysUserTable/index'),
         meta: { title: '用户管理', icon: 'table' }
       },
       {
         path: 'user-auth',
         name: 'UserAuth',
-        component: () => import('@/views/userAuth/index'),
+        component: () => import('@/views/sysUserAuth/index'),
         meta: { title: '角色管理', icon: 'tree' }
       },
       {
         path: 'menu',
         name: 'Menu',
-        component: () => import('@/views/menu/index'),
+        component: () => import('@/views/sysMenu/index'),
         meta: { title: '菜单管理', icon: 'table' }
       },
       {
         path: 'logistics',
         name: 'Logistics',
-        component: () => import('@/views/logistics/index'),
+        component: () => import('@/views/sysLogistics/index'),
         meta: { title: '物流管理', icon: 'table' }
       }
     ]

@@ -1,85 +1,149 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Activity name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker v-model="form.date1" type="date" placeholder="Pick a date" style="width: 100%;" />
-        </el-col>
-        <el-col :span="2" class="line">-</el-col>
-        <el-col :span="11">
-          <el-time-picker v-model="form.date2" type="fixed-time" placeholder="Pick a time" style="width: 100%;" />
-        </el-col>
-      </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery" />
-      </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type" />
-          <el-checkbox label="Promotion activities" name="type" />
-          <el-checkbox label="Offline activities" name="type" />
-          <el-checkbox label="Simple brand exposure" name="type" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor" />
-          <el-radio label="Venue" />
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input v-model="form.desc" type="textarea" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
-    </el-form>
+    <el-table :data="goods" border v-loading="options.loading">
+
+      <el-table-column align="center" label="ID" prop="id" width="200"/>
+
+      <el-table-column align="center" label="商品详情" width="340">
+        <template slot-scope="{row}">
+          <el-card :body-style="{padding: '10px'}">
+            <div class="card_container">
+              <img class="card_cover" :src="row.primary_pic_url" alt="">
+              <div class="card_info">
+                <p class="p lines line1 t">{{row.name}}</p>
+                <p class="p lines line1 d">{{row.goods_brief}}</p>
+                <p class="p c">
+                  <a>库存: <span>{{row.goods_number}} </span>件</a>
+                  <a>卖出: <span>{{row.sell_volume}} </span>件</a>
+                  <span>￥{{row.retail_price}}</span>
+                </p>
+              </div>
+            </div>
+          </el-card>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="上架" width="120">
+        <template slot-scope="{row}">
+          <el-switch
+            :value="row.on_sale"
+            style="display: block;"
+            @change="(status) => {handleStatusChange(row, status)}"
+            active-color="#13ce66"
+            inactive-color="#d0d0d0">
+          </el-switch>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="推荐" width="120">
+        <template slot-scope="{row}">
+          <el-tag v-if="row.is_hot" type="success">推荐</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="操作" width="200">
+        <template slot-scope="{row}">
+          <el-button size="mini" type="primary">编辑</el-button>
+          <el-button size="mini">删除</el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+    <el-pagination
+      class="pagination"
+      layout="prev, pager, next"
+      @current-change="handlePageChange"
+      :page-size="options.size"
+      :total="options.totalCount">
+    </el-pagination>
   </div>
 </template>
 
 <script>
+  import {mapActions, mapState} from 'vuex';
 export default {
   data() {
     return {
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+      params: {
       }
     }
   },
+  computed: {
+    ...mapState('goods', {
+      goods: state => state.goods,
+      options: state => state.goodsOptions,
+    })
+  },
   methods: {
-    onSubmit() {
-      this.$message('submit!')
+    ...mapActions('goods', [
+      'getGoods',
+      'setGoodsOptions'
+    ]),
+
+    handleStatusChange (item, status) {
+      item.on_sale = status;
     },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
+
+    handlePageChange (page) {
+      this.setGoodsOptions({page});
+      this.getGoods();
     }
+  },
+  mounted() {
+    this.getGoods();
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
   .line{
     text-align: center;
+  }
+  .card_container{
+    display: flex;
+    .card_cover{
+      width: 90px;
+      height: 90px;
+      display: block;
+      object-fit: cover;
+    }
+    .card_info{
+      display: flex;
+      flex-direction: column;
+      .p{
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+        padding-left: 10px;
+        &.t{
+          font-size: 15px;
+        }
+        &.d{
+          color: #999;
+          font-size: 12px;
+        }
+        &.c{
+          color: #999;
+          display: flex;
+          font-size: 12px;
+          margin-top: auto;
+          justify-content: flex-start;
+          span{
+            color: #de1e43;
+          }
+          a{
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .app-container{
+    .pagination{
+      margin-top: 16px;
+    }
   }
 </style>
 
