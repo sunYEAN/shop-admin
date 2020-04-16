@@ -26,4 +26,9 @@ export default {
   .line3{
     -webkit-line-clamp: 3;
   }
+
+  .hot{
+    width: 30px;
+    height: 30px;
+  }
 </style>

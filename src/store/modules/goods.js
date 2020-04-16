@@ -1,4 +1,4 @@
-import {getGoodsCateLogs, getGoods} from '../../api/goods';
+import {getGoodsCatalogs, getGoods} from '../../api/goods';
 
 const state = {
   goods: [],
@@ -6,12 +6,13 @@ const state = {
     page: 1,
     size: 15,
     name: '',
+    cate: '',
+    onSale: 0,
     loading: false,
     totalCount: 0,
     totalPages: 1,
   },
-  catelogs: [],
-
+  catalogs: [],
 };
 
 const getters = {};
@@ -33,9 +34,9 @@ const actions = {
    * @param params
    * @returns {Q.Promise<any> | Q.Promise<T | never> | PromiseLike<T | never> | Promise<T | never>}
    */
-  getGoodsCateLogs({commit, state}, params = {}) {
-    if (!state.catelogs.length || params.reset) {
-      return getGoodsCateLogs().then(res => {
+  getGoodsCatalogs({commit, state}, params = {}) {
+    if (!state.catalogs.length || params.reset) {
+      return getGoodsCatalogs().then(res => {
         const {data} = res;
         commit('SET_CATELOGS', data);
       })
@@ -43,15 +44,14 @@ const actions = {
   },
 
   getGoods({commit, state}) {
-    const {name, page, size, loading} = state.goodsOptions;
+    const {name, page, size, cate, onSale, loading} = state.goodsOptions;
     commit('SET_PAGE_OPTIONS', {loading: true});
 
     if (loading) return;
 
-    return getGoods({page, size, name}).then(res => {
+    return getGoods({page, size, name, cate, onSale}).then(res => {
       res.data.data.forEach(good => {
         good.on_sale = !!good.is_on_sale;
-        good.on_hot = !!good.is_hot;
       });
       commit('SET_GOODS_LIST', res.data);
     }).finally(() => {
@@ -62,7 +62,7 @@ const actions = {
 
 const mutations = {
   ['SET_CATELOGS'](state, data) {
-    state.catelogs = data;
+    state.catalogs = data;
   },
   ['SET_PAGE_OPTIONS'](state, options) {
     state.goodsOptions = Object.assign(state.goodsOptions, options);

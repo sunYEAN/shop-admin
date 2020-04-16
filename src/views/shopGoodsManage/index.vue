@@ -1,10 +1,13 @@
 <template>
   <div class="app-container">
+
+    <search-bar :catalogs="filterLevelCatalogs" @onSearchChange="handleSearchChange"></search-bar>
+
     <el-table :data="goods" border v-loading="options.loading">
 
-      <el-table-column align="center" label="ID" prop="id" width="200"/>
+      <el-table-column align="center" label="ID" prop="id"/>
 
-      <el-table-column align="center" label="商品详情" width="340">
+      <el-table-column align="center" label="商品详情" width="360">
         <template slot-scope="{row}">
           <el-card :body-style="{padding: '10px'}">
             <div class="card_container">
@@ -23,7 +26,28 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="上架" width="120">
+      <el-table-column align="center" label="类别">
+        <template slot-scope="{row}">
+          <el-tag type="primary">{{row.cate_info.name}}</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="热门">
+        <template slot="header">
+          <span class="icon sup">热门</span>
+        </template>
+        <template slot-scope="{row}">
+          <img class="hot" v-if="row.is_hot" src="../../icons/hot.png" alt="">
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="新品推荐">
+        <template slot-scope="{row}">
+          <el-tag v-if="row.is_new" type="success">推荐</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="上架">
         <template slot-scope="{row}">
           <el-switch
             :value="row.on_sale"
@@ -35,13 +59,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="推荐" width="120">
-        <template slot-scope="{row}">
-          <el-tag v-if="row.is_hot" type="success">推荐</el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="操作" width="200">
+      <el-table-column align="center" label="操作">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary">编辑</el-button>
           <el-button size="mini">删除</el-button>
@@ -62,77 +80,129 @@
 
 <script>
   import {mapActions, mapState} from 'vuex';
-export default {
-  data() {
-    return {
-      params: {
+  import SearchBar from '../../components/SearchBar';
+
+  export default {
+    data() {
+      return {
+        params: {}
       }
-    }
-  },
-  computed: {
-    ...mapState('goods', {
-      goods: state => state.goods,
-      options: state => state.goodsOptions,
-    })
-  },
-  methods: {
-    ...mapActions('goods', [
-      'getGoods',
-      'setGoodsOptions'
-    ]),
-
-    handleStatusChange (item, status) {
-      item.on_sale = status;
     },
+    components: {
+      SearchBar
+    },
+    computed: {
+      ...mapState('goods', {
+        goods: state => state.goods,
+        catalogs: state => state.catalogs,
+        options: state => state.goodsOptions,
+      }),
+      filterLevelCatalogs () {
+        return this.catalogs.filter(item => item.level == 2);
+      }
+    },
+    methods: {
+      ...mapActions('goods', [
+        'getGoods',
+        'setGoodsOptions',
+        'getGoodsCatalogs',
+      ]),
 
-    handlePageChange (page) {
-      this.setGoodsOptions({page});
+      handleStatusChange(item, status) {
+        item.on_sale = status;
+      },
+
+      handlePageChange(page) {
+        this.setGoodsOptions({page});
+        this.getGoods();
+      },
+
+      /**
+       * event handler 搜索条件改变
+       */
+      handleSearchChange (form) {
+        this.setGoodsOptions({
+          page: 1,
+          name: form.name,
+          cate: form.cate,
+          onSale: form.onSale
+        });
+        this.getGoods();
+      }
+    },
+    mounted() {
       this.getGoods();
+      this.getGoodsCatalogs();
     }
-  },
-  mounted() {
-    this.getGoods();
   }
-}
 </script>
 
 <style scoped lang="less">
-  .line{
+  .line {
     text-align: center;
   }
-  .card_container{
+
+  .icon{
+    color: #ca2230;
+    display: inline-block;
+    position: relative;
+    &:after{
+      top: 42%;
+      left: 26px;
+      width: 20px;
+      height: 20px;
+      display: block;
+      content: "";
+      z-index: 10;
+      position: absolute;
+      transform: translateY(-50%);
+      background: url('../../icons/hot.png')no-repeat center center;
+      background-size: contain;
+    }
+  }
+
+  .card_container {
     display: flex;
-    .card_cover{
+
+    .card_cover {
       width: 90px;
       height: 90px;
       display: block;
       object-fit: cover;
     }
-    .card_info{
+
+    .card_info {
       display: flex;
       flex-direction: column;
-      .p{
+
+      .p {
         width: 100%;
         margin: 0;
+        text-align: left;
         box-sizing: border-box;
         padding-left: 10px;
-        &.t{
+
+        &.t {
           font-size: 15px;
         }
-        &.d{
+
+        &.d {
           color: #999;
           font-size: 12px;
         }
-        &.c{
+
+        &.c {
           color: #999;
           display: flex;
           font-size: 12px;
           margin-top: auto;
           justify-content: flex-start;
-          span{
+
+          span {
             color: #de1e43;
           }
-          a{
+
+          a {
             margin-right: 10px;
           }
         }
@@ -140,10 +210,11 @@ export default {
     }
   }
 
-  .app-container{
-    .pagination{
+  .app-container {
+    .pagination {
       margin-top: 16px;
     }
   }
+
 </style>
 
