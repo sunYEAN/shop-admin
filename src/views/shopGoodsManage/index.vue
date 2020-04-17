@@ -1,7 +1,9 @@
 <template>
   <div class="app-container">
 
-    <search-bar :catalogs="filterLevelCatalogs" @onSearchChange="handleSearchChange"></search-bar>
+    <search-bar :catalogs="filterLevelCatalogs" @onSearchChange="handleSearchChange">
+      <el-button type="primary" size="small" @click="handleAddGood">新增</el-button>
+    </search-bar>
 
     <el-table :data="goods" border v-loading="options.loading">
 
@@ -128,7 +130,15 @@
           onSale: form.onSale
         });
         this.getGoods();
+      },
+
+      /**
+       * event handler 新增商品
+       */
+      handleAddGood () {
+        this.$router.push('edit');
       }
+
     },
     mounted() {
       this.getGoods();

@@ -31,4 +31,19 @@ export default {
     width: 30px;
     height: 30px;
   }
+  .bold{
+    font-weight: bold;
+  }
+
+  ul{
+    margin: 0;
+    padding: 0;
+  }
+  ul>li{
+    padding: 10px;
+  }
+
+  .container{
+    padding: 0 20px;
+  }
 </style>

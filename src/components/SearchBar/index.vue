@@ -1,5 +1,10 @@
 <template>
   <div class="search-bar">
+
+    <div class="left">
+      <slot></slot>
+    </div>
+
     <el-form class="form" :inline="true">
 
       <el-form-item>
@@ -67,6 +72,11 @@
     display: flex;
     margin-bottom: 10px;
     justify-content: flex-end;
+    .left{
+      display: flex;
+      align-items: center;
+      margin-right: auto;
+    }
   }
   .form{
     display: flex;
