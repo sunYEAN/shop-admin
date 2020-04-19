@@ -34,6 +34,9 @@ export default {
   .bold{
     font-weight: bold;
   }
+  .light {
+    color: #c20d2e;
+  }
 
   ul{
     margin: 0;

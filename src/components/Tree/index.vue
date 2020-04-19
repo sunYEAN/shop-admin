@@ -64,10 +64,8 @@
         margin-right: auto;
       }
       i{
-        width: 0;
-        height: 0;
+        opacity: 0;
         overflow: hidden;
-        transition: all 0.1s linear;
         font-weight: bold;
         margin-left: 10px;
         &.editor{
@@ -81,8 +79,7 @@
         cursor: pointer;
         background-color: #f3f5f7;
         i{
-          width: 13px;
-          height: 13px;
+          opacity: 1;
         }
       }
     }

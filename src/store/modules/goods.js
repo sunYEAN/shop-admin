@@ -1,4 +1,4 @@
-import {getGoodsCatalogs, getGoods} from '../../api/goods';
+import * as goodsApi from '../../api/goods';
 
 const state = {
   goods: [],
@@ -15,14 +15,17 @@ const state = {
   catalogs: [],
 };
 
-const getters = {};
-
-// 加载状态
-let loading = false;
-
+const getters = {
+  subCatalogs: (state) => state.catalogs.filter(cate => cate.level == 2)
+};
 
 const actions = {
 
+  /**
+   * 设置查询条件
+   * @param commit
+   * @param options
+   */
   setGoodsOptions({commit}, options) {
     commit('SET_PAGE_OPTIONS', options);
   },
@@ -36,20 +39,26 @@ const actions = {
    */
   getGoodsCatalogs({commit, state}, params = {}) {
     if (!state.catalogs.length || params.reset) {
-      return getGoodsCatalogs().then(res => {
+      return goodsApi.getGoodsCatalogs().then(res => {
         const {data} = res;
         commit('SET_CATELOGS', data);
       })
     }
   },
 
+  /**
+   * 获取商品列表
+   * @param commit
+   * @param state
+   * @returns {Q.Promise<any>}
+   */
   getGoods({commit, state}) {
     const {name, page, size, cate, onSale, loading} = state.goodsOptions;
     commit('SET_PAGE_OPTIONS', {loading: true});
 
     if (loading) return;
 
-    return getGoods({page, size, name, cate, onSale}).then(res => {
+    return goodsApi.getGoods({page, size, name, cate, onSale}).then(res => {
       res.data.data.forEach(good => {
         good.on_sale = !!good.is_on_sale;
       });
@@ -57,7 +66,19 @@ const actions = {
     }).finally(() => {
       commit('SET_PAGE_OPTIONS', {loading: false});
     })
-  }
+  },
+
+
+  /**
+   * 单纯的接口
+   * @param commie
+   * @param method
+   * @param payload
+   * @returns {*}
+   */
+  handleApiMethods ({commie}, {method, payload}) {
+    return goodsApi[method](payload);
+  },
 };
 
 const mutations = {
