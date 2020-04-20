@@ -24,7 +24,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="商品缩略图" prop="primary_pic_url">
+      <el-form-item label="商品缩略图" prop="list_pic_url">
         <el-upload
           class="avatar-uploader"
           name="image"
@@ -33,9 +33,9 @@
           :headers="uploadHeader"
           :show-file-list="false"
           :on-success="handleSuccess">
-          <div @click.stop v-if="step0.primary_pic_url" class="wrap">
-            <img :src="step0.primary_pic_url" class="avatar" alt=""/>
-            <i class="zoom el-icon-zoom-in" @click.stop="handlePreviewImg({url: step0.primary_pic_url})"></i>
+          <div @click.stop v-if="step0.list_pic_url" class="wrap">
+            <img :src="step0.list_pic_url" class="avatar" alt=""/>
+            <i class="zoom el-icon-zoom-in" @click.stop="handlePreviewImg({url: step0.list_pic_url})"></i>
             <i class="delete el-icon-delete" @click.stop="removeMiniAvatar"></i>
             <span class="check"><i class="el-icon-check"></i></span>
           </div>
@@ -122,7 +122,6 @@
       <el-button v-else @click="handleStep('add')">下一步</el-button>
     </div>
 
-    <preview-image ref="preview"/>
   </div>
 </template>
 
@@ -156,7 +155,7 @@
                     is_hot: 1, // 热门
                     category_id: '',
                     goods_brief: '',
-                    primary_pic_url: ''
+                    list_pic_url: ''
                 },
                 rule0: {
                     name: {
@@ -174,7 +173,7 @@
                         message: '请给该商品选择一个分类',
                         required: true,
                     },
-                    primary_pic_url: {
+                    list_pic_url: {
                         trigger: 'change',
                         required: true,
                         message: '请上传一张该商品的主图'
@@ -229,7 +228,6 @@
                     // 销售量
                     sell_volume: {
                         required: true,
-                        pattern: /^\+?[1-9]\d*$/,
                         message: '销售量必须是一个正整数',
                         trigger: 'change'
                     },
@@ -311,14 +309,14 @@
              * method 删除已上传的图片
              */
             removeMiniAvatar() {
-                this.step0.primary_pic_url = '';
+                this.step0.list_pic_url = '';
             },
 
             /**
              * event handler 上传图片完毕
              */
             handleSuccess(res, file) {
-                this.step0.primary_pic_url = res.data.url || URL.createObjectURL(file.raw);
+                this.step0.list_pic_url = res.data.url || URL.createObjectURL(file.raw);
             },
 
             /**
@@ -343,7 +341,7 @@
              * event handler 查看图片
              */
             handlePreviewImg(file) {
-                this.$refs.preview.preview(file.url);
+              this.$store.dispatch('app/previewImage', file.url);
             },
 
         },
@@ -413,6 +411,7 @@
       width: calc(100% - 20px);
       height: calc(100% - 20px);
       display: block;
+      object-fit: cover;
     }
 
     .delete, .zoom {

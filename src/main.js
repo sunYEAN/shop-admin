@@ -8,6 +8,10 @@ import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
 
+import PreviewImage from './components/PreviewImage';
+
+Vue.use(PreviewImage);
+
 import App from './App'
 import store from './store'
 import router from './router'

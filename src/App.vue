@@ -6,7 +6,10 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    this.$store.commit('app/SET_PREVIEW', this.$refs.preview);
+  }
 }
 </script>
 
@@ -36,6 +39,10 @@ export default {
   }
   .light {
     color: #c20d2e;
+  }
+
+  .pointer{
+    cursor: pointer;
   }
 
   ul{

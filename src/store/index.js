@@ -12,8 +12,6 @@ stores.keys().forEach(key => {
   modules[name].namespaced = true;
 });
 
-console.log(modules)
-
 
 Vue.use(Vuex);
 

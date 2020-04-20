@@ -82,6 +82,13 @@ export const constantRoutes = [
         meta: { title: '编辑商品', icon: 'tree' }
       },
       {
+        path: 'update',
+        name: 'GoodsUpdate',
+        hidden: true,
+        component: () => import('@/views/shopGoodsUpdate/index'),
+        meta: { title: '修改商品', icon: 'tree' }
+      },
+      {
         path: 'order',
         name: 'Order',
         component: () => import('@/views/shopOrder/index'),

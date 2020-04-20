@@ -5,8 +5,9 @@ const state = {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
-  device: 'desktop'
-}
+  device: 'desktop',
+  preview: null,
+};
 
 const mutations = {
   TOGGLE_SIDEBAR: state => {
@@ -25,8 +26,11 @@ const mutations = {
   },
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
+  },
+  ['SET_PREVIEW'] (state, preview) {
+    state.preview = preview;
   }
-}
+};
 
 const actions = {
   toggleSideBar({ commit }) {
@@ -37,8 +41,11 @@ const actions = {
   },
   toggleDevice({ commit }, device) {
     commit('TOGGLE_DEVICE', device)
+  },
+  previewImage ({commit, state}, url) {
+    state.preview.preview(url);
   }
-}
+};
 
 export default {
   namespaced: true,
