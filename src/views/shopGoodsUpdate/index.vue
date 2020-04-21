@@ -23,23 +23,6 @@
             </el-upload>
           </el-form-item>
 
-          <div class="desc">
-            <el-form-item>
-              <el-input class="name"
-                        clearable
-                        v-model="good.name"
-                        placeholder="商品名称"></el-input>
-            </el-form-item>
-
-            <el-form-item>
-              <el-input class="brief"
-                        clearable
-                        v-model="good.goods_brief"
-                        type="textarea"
-                        placeholder="商品简介"></el-input>
-            </el-form-item>
-          </div>
-
           <div class="number">
             <el-form-item class="form-item">
               库存：
@@ -58,11 +41,28 @@
               <el-input v-model="good.goods_unit"></el-input>
             </el-form-item>
           </div>
+
+          <div class="desc">
+            <el-form-item>
+              <el-input class="name"
+                        clearable
+                        v-model="good.name"
+                        placeholder="商品名称"></el-input>
+            </el-form-item>
+
+            <el-form-item>
+              <el-input class="brief"
+                        clearable
+                        v-model="good.goods_brief"
+                        type="textarea"
+                        placeholder="商品简介"></el-input>
+            </el-form-item>
+          </div>
         </div>
       </div>
 
       <el-form-item label="商品相册：">
-        <a @click="checkAlbum">查看相册</a>
+        <a @click="handleMethod('album')">查看相册</a>
       </el-form-item>
 
       <el-form-item label="商品规格：">
@@ -70,7 +70,7 @@
       </el-form-item>
 
       <el-form-item label="商品参数：">
-        <a>查看参数</a>
+        <a @click="handleMethod('attributes')">查看参数</a>
       </el-form-item>
 
       <el-form-item label="商品详情：">
@@ -99,18 +99,24 @@
         <el-radio v-model="good.is_on_sale" :label="1">是</el-radio>
       </el-form-item>
     </el-form>
-    <photo-album :visible.sync="showAlbum" :images="good.gallery"/>
+    <good-album :on-preveiw="$preview" :on-upload-success="handleUploadSuccess" :visible.sync="showAlbum" :images="good.gallery"/>
+
+    <!-- 商品参数 -->
+    <!--<good-attr :visible.sync="showAlbum" :attributes="good.attributes"></good-attr>-->
   </div>
 </template>
 
 <script>
   import {getToken} from '../../utils/auth';
   import {mapState, mapActions} from 'vuex';
-  import PhotoAlbum from "../../components/PhotoAlbum/index";
+  import {GoodAlbum, GoodAttr} from '../../components/GoodUpdate';
 
   export default {
     name: "GoodUpdate",
-    components: {PhotoAlbum},
+    components: {
+      GoodAlbum,
+      GoodAttr
+    },
     data() {
       return {
         uploadHeader: {
@@ -133,8 +139,15 @@
         'handleApiMethods',
       ]),
 
-      checkAlbum () {
-        this.showAlbum = true;
+      handleMethod (type) {
+        switch (type) {
+          case 'album':
+            this.showAlbum = true;
+                break;
+          case 'attributes':
+
+            break;
+        }
       },
 
       getGoodDetail (id) {
@@ -144,6 +157,15 @@
             id
           }
         })
+      },
+      // 相册上传成功
+      handleUploadSuccess (data) {
+        this.handleApiMethods({
+          method: 'addGallery',
+          payload: {
+
+          }
+        })
       }
     },
 
@@ -151,13 +173,51 @@
       const {id} = this.$route.query;
 
       this.getGoodDetail(id).then(res => {
+        res.data.gallery.forEach(item => {
+          item.url = item.img_url;
+        });
         this.good = res.data;
       })
     }
   }
 </script>
 
+<style scoped>
+  .good-update >>> .el-dialog__header {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .good-update .number >>> .el-input {
+    width: 200px;
+  }
+
+  .good-update .info >>> .el-form-item {
+    margin-bottom: 0px;
+  }
+
+  .good-update .desc >>> .el-form-item {
+    margin-bottom: 6px;
+  }
+
+  .good-update .number >>> .el-form-item {
+    margin-bottom: 6px;
+  }
+
+  .good-update >>> .el-dialog {
+    min-width: 825px;
+  }
+
+  .good-update >>> .el-textarea__inner {
+    min-height: 110px !important;
+  }
+  .good-update >>> .el-input-number--small{
+    width: 200px;
+  }
+</style>
 <style scoped lang="less">
+  a {
+    color: #409EFF;
+  }
   .wrap {
     width: 100%;
     height: 100%;
@@ -234,4 +294,46 @@
 
 
   }
+
+  .good-form {
+    .good-info {
+      display: flex;
+
+      h3 {
+        width: 80px;
+        font-size: 14px;
+      }
+
+      .info {
+        flex: 1;
+        display: flex;
+        padding: 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+        .number{
+          margin-left: 20px;
+        }
+
+        .desc {
+          flex: 1;
+          display: flex;
+          overflow: hidden;
+          margin-left: 20px;
+          flex-direction: column;
+
+          .name {
+            font-size: 14px;
+            font-weight: bold;
+          }
+
+          .brief {
+            flex: 1;
+            overflow: auto;
+          }
+        }
+      }
+    }
+  }
+
 </style>

@@ -11,6 +11,8 @@ export const getGoodGallery = (params) => request.get('/admin/gallery/index', {p
 
 export const addGood = (params) => request.post('/admin/goods/store', params);
 
+export const addGallery = (params) => request.post('/admin/gallery/store', params);
+
 
 
 export const deleteGood = (params) => request.post('/admin/goods/delete', params);

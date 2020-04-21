@@ -86,7 +86,6 @@
 <script>
   import {mapActions, mapState} from 'vuex';
   import SearchBar from '../../components/SearchBar';
-  import PhotoAlbum from "../../components/PhotoAlbum/index";
 
   export default {
     data() {
@@ -94,8 +93,8 @@
       }
     },
     components: {
-      PhotoAlbum,
-      SearchBar
+      SearchBar,
+
     },
     computed: {
       ...mapState('goods', {
@@ -218,9 +217,6 @@
   }
 </style>
 <style scoped lang="less">
-  a {
-    color: #409EFF;
-  }
 
   .line {
     text-align: center;
@@ -297,55 +293,6 @@
     .app-container {
       .pagination {
         margin-top: 16px;
-      }
-    }
-  }
-
-  .good-form {
-    .good-info {
-      display: flex;
-
-      h3 {
-        width: 80px;
-        font-size: 14px;
-      }
-
-      .info {
-        flex: 1;
-        display: flex;
-        padding: 16px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        background-color: #f9f9f9;
-
-        .desc {
-          flex: 1;
-          display: flex;
-          overflow: hidden;
-          margin-left: 20px;
-          margin-right: 20px;
-          flex-direction: column;
-
-          .name {
-            font-size: 14px;
-            font-weight: bold;
-          }
-
-          .brief {
-            flex: 1;
-            overflow: auto;
-          }
-
-          .number {
-            display: flex;
-            padding: 0 15px;
-            margin-top: auto;
-
-            .form-item {
-              margin-right: 20px;
-            }
-          }
-        }
       }
     }
   }

@@ -1,0 +1,19 @@
+.base-enter-active, .base-leave-active {
+  opacity: 1;
+  transition: all 0.2s ease-in-out;
+}
+
+.base-enter, .base-leave-to {
+  opacity: 0;
+}
+
+.base-card{
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2500;
+  overflow: auto;
+  position: fixed;
+  background-color: rgba(0,0,0,0.5);
+}
