@@ -1,5 +1,5 @@
 <template>
-  <div class="good-update container" >
+  <div class="good-update container">
     <el-form ref="form" class="good-form" :model="good" size="small">
       <div class="good-info">
         <h3>商品详情：</h3>
@@ -99,7 +99,10 @@
         <el-radio v-model="good.is_on_sale" :label="1">是</el-radio>
       </el-form-item>
     </el-form>
-    <good-album :on-preveiw="$preview" :on-upload-success="handleUploadSuccess" :visible.sync="showAlbum" :images="good.gallery"/>
+    <good-album :good-id="good.id"
+                :on-upload-success="handleUploadSuccess"
+                :visible.sync="showAlbum"
+                :images="good.gallery" @update="getGoodInfo"/>
 
     <!-- 商品参数 -->
     <!--<good-attr :visible.sync="showAlbum" :attributes="good.attributes"></good-attr>-->
@@ -107,79 +110,78 @@
 </template>
 
 <script>
-  import {getToken} from '../../utils/auth';
-  import {mapState, mapActions} from 'vuex';
-  import {GoodAlbum, GoodAttr} from '../../components/GoodUpdate';
+    import {getToken} from '../../utils/auth';
+    import {mapState, mapActions} from 'vuex';
+    import {GoodAlbum, GoodAttr} from '../../components/GoodUpdate';
 
-  export default {
-    name: "GoodUpdate",
-    components: {
-      GoodAlbum,
-      GoodAttr
-    },
-    data() {
-      return {
-        uploadHeader: {
-          'x-token': getToken()
+    export default {
+        name: "GoodUpdate",
+        components: {
+            GoodAlbum,
+            GoodAttr
         },
-        showAlbum: false,
-        good: {},
-      }
-    },
-    computed: {
-      ...mapState('goods', {
-        catalogs: state => state.catalogs,
-      }),
-      filterLevelCatalogs() {
-        return this.catalogs.filter(item => item.level == 2);
-      }
-    },
-    methods: {
-      ...mapActions('goods', [
-        'handleApiMethods',
-      ]),
+        data() {
+            return {
+                uploadHeader: {
+                    'x-token': getToken()
+                },
+                showAlbum: false,
+                good: {},
+            }
+        },
+        computed: {
+            ...mapState('goods', {
+                catalogs: state => state.catalogs,
+            }),
+            filterLevelCatalogs() {
+                return this.catalogs.filter(item => item.level === 2);
+            }
+        },
+        methods: {
+            ...mapActions('goods', [
+                'handleApiMethods',
+            ]),
 
-      handleMethod (type) {
-        switch (type) {
-          case 'album':
-            this.showAlbum = true;
-                break;
-          case 'attributes':
+            handleMethod(type) {
+                switch (type) {
+                    case 'album':
+                        this.showAlbum = true;
+                        break;
+                    case 'attributes':
 
-            break;
+                        break;
+                }
+            },
+
+            getGoodDetail(id) {
+                return this.handleApiMethods({
+                    method: 'getGoodById',
+                    payload: {
+                        id
+                    }
+                })
+            },
+            // 相册上传成功
+            handleUploadSuccess(data) {
+                this.handleApiMethods({
+                    method: 'addGallery',
+                    payload: {}
+                })
+            },
+
+
+            getGoodInfo () {
+                const {id} = this.$route.query;
+                this.getGoodDetail(id).then(res => {
+                    this.good = res.data;
+                })
+            },
+        },
+
+        created() {
+            this.getGoodInfo();
         }
-      },
-
-      getGoodDetail (id) {
-        return this.handleApiMethods({
-          method: 'getGoodById',
-          payload: {
-            id
-          }
-        })
-      },
-      // 相册上传成功
-      handleUploadSuccess (data) {
-        this.handleApiMethods({
-          method: 'addGallery',
-          payload: {
-
-          }
-        })
-      }
-    },
-
-    created() {
-      const {id} = this.$route.query;
-
-      this.getGoodDetail(id).then(res => {
-        res.data.gallery.forEach(item => {
-          item.url = item.img_url;
-        });
-        this.good = res.data;
-      })
     }
-  }
 </script>
 
 <style scoped>
@@ -210,7 +212,8 @@
   .good-update >>> .el-textarea__inner {
     min-height: 110px !important;
   }
-  .good-update >>> .el-input-number--small{
+
+  .good-update >>> .el-input-number--small {
     width: 200px;
   }
 </style>
@@ -218,6 +221,7 @@
   a {
     color: #409EFF;
   }
+
   .wrap {
     width: 100%;
     height: 100%;
@@ -311,7 +315,8 @@
         border-radius: 4px;
         margin-bottom: 20px;
         background-color: #f9f9f9;
-        .number{
+
+        .number {
           margin-left: 20px;
         }
 
