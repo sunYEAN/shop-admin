@@ -66,11 +66,11 @@
       </el-form-item>
 
       <el-form-item label="商品规格：">
-        <a>查看规格</a>
+        <a @click="handleMethod('skus')">查看规格</a>
       </el-form-item>
 
       <el-form-item label="商品参数：">
-        <a @click="handleMethod('attributes')">查看参数</a>
+        <a @click="handleMethod('attrs')">查看参数</a>
       </el-form-item>
 
       <el-form-item label="商品详情：">
@@ -105,7 +105,9 @@
                 :images="good.gallery" @update="getGoodInfo"/>
 
     <!-- 商品参数 -->
-    <!--<good-attr :visible.sync="showAlbum" :attributes="good.attributes"></good-attr>-->
+    <good-attr :good-id="good.id"
+               :visible.sync="showAttrs"
+               :attributes="good.attributes"></good-attr>
   </div>
 </template>
 
@@ -126,6 +128,7 @@
                     'x-token': getToken()
                 },
                 showAlbum: false,
+                showAttrs: false,
                 good: {},
             }
         },
@@ -147,8 +150,8 @@
                     case 'album':
                         this.showAlbum = true;
                         break;
-                    case 'attributes':
-
+                    case 'attrs':
+                        this.showAttrs = true;
                         break;
                 }
             },

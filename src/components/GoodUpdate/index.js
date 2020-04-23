@@ -4,9 +4,12 @@ import './update.css';
 
 function WithBaseCard(Component) {
   return {
-    props: Component.props,
-    mounted () {
-      console.log(this.$props)
+    props: {
+      visible: {
+        type: Boolean,
+        default: false
+      },
+      ...Component.props
     },
     methods: {
       handleClose () {
@@ -44,6 +47,7 @@ function WithBaseCard(Component) {
 
 const GoodAlbum = WithBaseCard(GoodsAlbum);
 const GoodAttr = WithBaseCard(GoodsAttribute);
+
 
 export {
   GoodAlbum,
