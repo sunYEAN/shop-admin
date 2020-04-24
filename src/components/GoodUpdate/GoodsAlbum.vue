@@ -19,7 +19,7 @@
 
         <div class="upload-wrap">
           <el-form :model="form" :rules="rule" ref="form">
-            <el-form-item prop="img_url">
+            <el-form-item prop="img_url" label="上传图片">
               <el-upload
                 action="/admin/admin/upload/image"
                 name="image"
@@ -153,6 +153,9 @@
   >>> .el-form-item__content{
     line-height: normal;
   }
+  >>> .el-card__body{
+    padding: 0;
+  }
 </style>
 <style scoped lang="less">
 
@@ -198,7 +201,6 @@
           flex: 1;
           display: flex;
           flex-wrap: wrap;
-          padding-right: 20px;
 
           .main-item {
             width: 33.33%;
@@ -243,10 +245,11 @@
 
         .upload-wrap {
           width: 200px;
+          padding: 0 10px 20px 10px;
+          position: relative;
           flex-shrink: 0;
           border-left: 1px solid #EBEEF5;
-          padding-left: 20px;
-          position: relative;
+          background-color: #f3f5f7;
 
           .submit {
             width: 100%;
@@ -260,6 +263,7 @@
             font-size: 20px;
             align-items: center;
             justify-content: center;
+            background-color: #ffffff;
           }
 
           .bt {
