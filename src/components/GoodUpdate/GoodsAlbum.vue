@@ -81,10 +81,6 @@
                 type: Number,
                 default: 0
             },
-            visible: {
-                type: Boolean,
-                default: false
-            },
             images: {
                 type: Array,
                 default() {
