@@ -111,7 +111,6 @@
         'getGoods',
         'handleApiMethods',
         'setGoodsOptions',
-        'getGoodsCatalogs',
       ]),
 
       handleStatusChange(item, status) {
@@ -182,7 +181,6 @@
     },
     mounted() {
       this.getGoods();
-      this.getGoodsCatalogs();
     }
   }
 </script>

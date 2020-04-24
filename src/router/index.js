@@ -63,10 +63,16 @@ export const constantRoutes = [
     meta: { title: '商城管理', icon: 'example' },
     children: [
       {
+        path: 'goods-attrs',
+        name: 'GoodsAttrs',
+        component: () => import('@/views/shopGoodsAttrs/index'),
+        meta: { title: '商品参数管理', icon: 'table' }
+      },
+      {
         path: 'goods-cate',
         name: 'GoodsCate',
         component: () => import('@/views/shopGoodsCate/index'),
-        meta: { title: '商品类别', icon: 'table' }
+        meta: { title: '商品类别管理', icon: 'table' }
       },
       {
         path: 'goods-manage',

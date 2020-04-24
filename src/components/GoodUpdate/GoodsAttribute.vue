@@ -8,8 +8,8 @@
 
       <el-table :data="attrs" border >
         <el-table-column prop="id"    align="center" label="id" width="80px"></el-table-column>
-        <el-table-column prop="name"  align="center" label="类型名称"></el-table-column>
-        <el-table-column prop="value" align="center" label="类型值"></el-table-column>
+        <el-table-column prop="name"  align="center" label="类型名称" width="100px"></el-table-column>
+        <el-table-column prop="value" label="类型值"></el-table-column>
         <el-table-column label="操作" align="center" width="100px">
           <el-button type="primary" icon="el-icon-edit" circle></el-button>
         </el-table-column>

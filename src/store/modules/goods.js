@@ -41,7 +41,7 @@ const actions = {
     if (!state.catalogs.length || params.reset) {
       return goodsApi.getGoodsCatalogs().then(res => {
         const {data} = res;
-        commit('SET_CATELOGS', data);
+        commit('SET_CATALOGS', data);
       })
     }
   },
@@ -82,7 +82,7 @@ const actions = {
 };
 
 const mutations = {
-  ['SET_CATELOGS'](state, data) {
+  ['SET_CATALOGS'](state, data) {
     state.catalogs = data;
   },
   ['SET_PAGE_OPTIONS'](state, options) {
