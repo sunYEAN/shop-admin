@@ -2,17 +2,30 @@
   <div class="attributes-container">
 
     <div class="container category_wrap br">
+
       <ul class="category_list">
         <li class="category_item" @click="current_category = index" :class="{active: current_category === index}"
             v-for="(i, index) in attributeCategory" :key="i.id">{{i.name}}
         </li>
+        <li v-if="showAddAttributeCategory" class="category_add">
+          <el-form ref="cate" :model="formAddCate">
+            <el-form-item required>
+              <el-input v-model="formAddCate.name" placeholder="请输入名称" @change="addAttributeCategory" @blur="handleAddCategory(false)"></el-input>
+            </el-form-item>
+          </el-form>
+        </li>
       </ul>
+
+      <span v-if="!showAddAttributeCategory" class="add">
+        <i class="icon el-icon-plus" @click="handleAddCategory(true)"></i>
+      </span>
+
     </div>
     <div class="container category-info">
       <p>分类详情：</p>
       <el-form :rules="rule" ref="form" :model="currentCategory">
         <el-form-item label="开启:" label-width="60px" required>
-          <el-switch v-model="currentCategory.enabled" @change="updateCategoryAttribute"></el-switch>
+          <el-switch v-model="currentCategory.cate_enabled" @change="updateCategoryAttribute"></el-switch>
         </el-form-item>
         <el-form-item label="名称:" label-width="60px" prop="name">
           <el-input clearable v-model="currentCategory.name" size="small" placeholder="名称"
@@ -29,7 +42,7 @@
         <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
         <el-table-column align="center" label="开启状态">
           <template slot-scope="{row}">
-            <el-switch v-model="row.attribute_category_enabled"></el-switch>
+            <el-switch v-model="row.attr_enabled"></el-switch>
           </template>
         </el-table-column>
 
@@ -59,7 +72,8 @@
     data() {
       return {
         current_category: 0,
-        currentCategory: {},
+        currentCategory: {}, // 当前选中的参数分类项
+        showAddAttributeCategory: false, // 打开新增参数分类弹窗
         rule: {
           name: [
             {
@@ -68,6 +82,9 @@
               trigger: 'change'
             }
           ]
+        },
+        formAddCate: {
+          name: '',
         }
       }
     },
@@ -91,6 +108,7 @@
       computedCurrentCategory: {
         handler(nVal) {
           this.currentCategory = Object.assign({}, nVal);
+          this.setAttributeOptions({page: 1});
           this.getAttributes({id: nVal.id});
         }
       }
@@ -115,16 +133,30 @@
         if (this.currentCategory.id) {
           this.$refs.form.validate(async valid => {
             if (valid) {
-              const params = this.currentCategory;
-              params.enabled = params.enabled ? 1 : 0;
+              const params = Object.assign({}, this.currentCategory);
+              params.enabled = params.cate_enabled ? 1 : 0;
+              delete params.cate_enabled;
               await this.handleAttributeApi({
-                method: 'updateAttribute',
+                method: 'storeAttribute',
                 payload: params
               });
               this.getAttributeCategory({reset: true});
             }
           });
         }
+      },
+
+      addAttributeCategory () {
+        this.$refs.cate.validate(async valid => {
+          if (valid) {
+            await this.handleAttributeApi({
+              method: 'storeAttribute',
+              payload: this.formAddCate
+            });
+            // this.
+            this.getAttributeCategory({reset: true});
+          }
+        })
       },
 
       // handleDeleteGood(good) {
@@ -159,6 +191,9 @@
       //   });
       // },
 
+      handleAddCategory (status) {
+        this.showAddAttributeCategory = status;
+      }
     },
     mounted() {
       this.getAttributeCategory();
@@ -171,6 +206,7 @@
     margin-bottom: 0;
   }
   >>> .el-table{
+    border-top: none;
     border-left: none;
   }
 </style>
@@ -183,18 +219,18 @@
     li {
       cursor: pointer;
       height: 50px;
+      padding: 0;
       box-sizing: border-box;
+      padding-left: 10px;
 
       &.active {
         color: #409EFF;
-        font-size: 16px;
         font-weight: bold;
         background-color: #f3f5f7;
       }
 
       &:hover {
         color: #409EFF;
-        font-size: 16px;
         background-color: #f3f5f7;
       }
     }
@@ -217,20 +253,61 @@
       &.category_wrap {
         width: 200px;
         padding: 0;
+        position: relative;
 
         .category_list {
+          padding-bottom: 70px;
           .category_item {
-            padding: 16px 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            margin-left: 16px;
           }
-
           .category_item ~ .category_item {
             border-top: 1px solid #f0f0f0;
+          }
+          .category_add{
+            display: flex;
+            border-top: 1px solid #f0f0f0;
+            align-items: center;
+            justify-content: center;
+            background-color: #409EFF;
+          }
+
+        }
+
+        .add{
+          left: 50%;
+          border: none!important;
+          bottom: 10px;
+          margin: 0;
+          padding: 0;
+          position: absolute;
+          &:hover{
+            background-color: transparent;
+            .icon{
+              box-shadow: none;
+            }
+          }
+          .icon{
+            width: 40px;
+            color: #ffffff;
+            height: 40px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            border-radius: 50%;
+            justify-content: center;
+            background-color: #409EFF;
+            transition: box-shadow 0.1s ease-in-out;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
           }
         }
       }
 
       &.category-info {
         width: 240px;
+        padding: 0 15px 0 10px;
         p {
           padding-left: 7px;
         }

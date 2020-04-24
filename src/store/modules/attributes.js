@@ -34,8 +34,8 @@ const actions = {
     if (!state.attributeCategory.length || params.reset) {
       return attributesApi.getAttributeCategory().then(res => {
         const {data} = res;
-        data.forEach(item => {
-          item.enabled = !!item.enabled
+        data.forEach(i => {
+          i.cate_enabled = !!i.cate_enabled;
         });
         commit('SET_ATTRIBUTE_CATEGORY', data);
       })
@@ -74,7 +74,8 @@ const mutations = {
   ['SET_ATTRIBUTES'](state, res) {
     const {data, count, totalPages} = res;
     data.forEach(i => {
-      i.enabled = !!i.enabled
+      i.attr_enabled = !!i.attr_enabled;
+      i.cate_enabled = !!i.cate_enabled;
     });
     state.attributes = data;
     state.attributesOptions.totalCount = count;
