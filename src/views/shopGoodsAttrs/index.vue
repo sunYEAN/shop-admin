@@ -9,8 +9,9 @@
         </li>
         <li v-if="showAddAttributeCategory" class="category_add">
           <el-form ref="cate" :model="formAddCate">
-            <el-form-item required>
-              <el-input v-model="formAddCate.name" placeholder="请输入名称" @change="addAttributeCategory" @blur="handleAddCategory(false)"></el-input>
+            <el-form-item prop="name" required>
+              <el-input ref="input" v-model="formAddCate.name" placeholder="请输入名称"
+                        @change="addAttributeCategory"></el-input>
             </el-form-item>
           </el-form>
         </li>
@@ -21,7 +22,7 @@
       </span>
 
     </div>
-    <div class="container category-info">
+    <div class="container category_info">
       <p>分类详情：</p>
       <el-form :rules="rule" ref="form" :model="currentCategory">
         <el-form-item label="开启:" label-width="60px" required>
@@ -33,23 +34,24 @@
         </el-form-item>
       </el-form>
     </div>
+
+    <div class="collapse_line"></div>
     <div class="container attribute_wrap">
       <el-table class="table" stripe :data="attributes" border v-loading="options.loading">
-        <el-table-column align="center" prop="id" label="ID"></el-table-column>
-        <el-table-column align="center" label="所属分类">
-          <template slot-scope="{row}">{{`${row.attribute_category_name}(${row.attribute_category_id})`}}</template>
-        </el-table-column>
-        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
-        <el-table-column align="center" label="开启状态">
+        <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
+        <el-table-column align="center" prop="name"               label="参数名(name)"></el-table-column>
+        <el-table-column align="center"             width="200px" label="开启状态">
           <template slot-scope="{row}">
             <el-switch v-model="row.attr_enabled"></el-switch>
           </template>
         </el-table-column>
-
-        <el-table-column align="center" label="操作">
+        <el-table-column align="center" label="所属分类">
+          <template slot-scope="{row}">{{`${row.attribute_category_name}(${row.attribute_category_id})`}}</template>
+        </el-table-column>
+        <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="{row}">
-            <el-button type="primary" size="small" icon="el-icon-edit" circle></el-button>
-            <el-button type="danger" size="small" icon="el-icon-delete" circle></el-button>
+            <a class="edit" title="编辑"><i class="el-icon-edit"></i></a>
+            <a class="delete" title="删除"><i class="el-icon-delete"></i></a>
           </template>
         </el-table-column>
       </el-table>
@@ -61,151 +63,164 @@
         :total="options.totalCount">
       </el-pagination>
     </div>
+    <div class="container attribute_info"></div>
   </div>
 </template>
 
 <script>
-  import {mapActions, mapState} from 'vuex';
-  import SearchBar from '../../components/SearchBar';
+    import {mapActions, mapState} from 'vuex';
+    import SearchBar from '../../components/SearchBar';
 
-  export default {
-    data() {
-      return {
-        current_category: 0,
-        currentCategory: {}, // 当前选中的参数分类项
-        showAddAttributeCategory: false, // 打开新增参数分类弹窗
-        rule: {
-          name: [
-            {
-              required: true,
-              message: '请填写一个名称...',
-              trigger: 'change'
+    export default {
+        data() {
+            return {
+                current_category: 0,
+                currentCategory: {}, // 当前选中的参数分类项
+                showAddAttributeCategory: false, // 打开新增参数分类弹窗
+                rule: {
+                    name: [
+                        {
+                            required: true,
+                            message: '请填写一个名称...',
+                            trigger: 'change'
+                        }
+                    ]
+                },
+                formAddCate: {
+                    name: '',
+                }
             }
-          ]
         },
-        formAddCate: {
-          name: '',
-        }
-      }
-    },
-    components: {
-      SearchBar,
-    },
-    computed: {
-      ...mapState('attributes', {
-        options: state => state.attributesOptions,
-        attributes: state => state.attributes,
-        attributeCategory: state => state.attributeCategory,
-      }),
-      computedCurrentCategory() {
-        return this.attributeCategory[this.current_category] || {};
-      },
-      currentCategoryId () {
-        return this.computedCurrentCategory.id || '';
-      }
-    },
-    watch: {
-      computedCurrentCategory: {
-        handler(nVal) {
-          this.currentCategory = Object.assign({}, nVal);
-          this.setAttributeOptions({page: 1});
-          this.getAttributes({id: nVal.id});
-        }
-      }
-    },
-    methods: {
-      ...mapActions('attributes', [
-        'getAttributes',
-        'handleAttributeApi',
-        'setAttributeOptions',
-        'getAttributeCategory',
-      ]),
-
-      handlePageChange(page) {
-        this.setAttributeOptions({page});
-        this.getAttributes({id: this.currentCategoryId});
-      },
-
-      /**
-       * 更新参数
-       */
-      updateCategoryAttribute() {
-        if (this.currentCategory.id) {
-          this.$refs.form.validate(async valid => {
-            if (valid) {
-              const params = Object.assign({}, this.currentCategory);
-              params.enabled = params.cate_enabled ? 1 : 0;
-              delete params.cate_enabled;
-              await this.handleAttributeApi({
-                method: 'storeAttribute',
-                payload: params
-              });
-              this.getAttributeCategory({reset: true});
+        components: {
+            SearchBar,
+        },
+        computed: {
+            ...mapState('attributes', {
+                options: state => state.attributesOptions,
+                attributes: state => state.attributes,
+                attributeCategory: state => state.attributeCategory,
+            }),
+            computedCurrentCategory() {
+                return this.attributeCategory[this.current_category] || {};
+            },
+            currentCategoryId() {
+                return this.computedCurrentCategory.id || '';
             }
-          });
+        },
+        watch: {
+            computedCurrentCategory: {
+                handler(nVal) {
+                    this.currentCategory = Object.assign({}, nVal);
+                    this.setAttributeOptions({page: 1});
+                    this.getAttributes({id: nVal.id});
+                }
+            }
+        },
+        methods: {
+            ...mapActions('attributes', [
+                'getAttributes',
+                'handleAttributeApi',
+                'setAttributeOptions',
+                'getAttributeCategory',
+            ]),
+
+            handlePageChange(page) {
+                this.setAttributeOptions({page});
+                this.getAttributes({id: this.currentCategoryId});
+            },
+
+            /**
+             * 更新参数
+             */
+            updateCategoryAttribute() {
+                if (this.currentCategory.id) {
+                    this.$refs.form.validate(async valid => {
+                        if (valid) {
+                            const params = Object.assign({}, this.currentCategory);
+                            params.enabled = params.cate_enabled ? 1 : 0;
+                            delete params.cate_enabled;
+                            await this.handleAttributeApi({
+                                method: 'storeAttribute',
+                                payload: params
+                            });
+                            this.getAttributeCategory({reset: true});
+                        }
+                    });
+                }
+            },
+
+            addAttributeCategory() {
+                this.$refs.cate.validate(async valid => {
+                    if (valid) {
+                        await this.handleAttributeApi({
+                            method: 'storeAttribute',
+                            payload: this.formAddCate
+                        });
+                        this.getAttributeCategory({reset: true});
+                        this.$refs['cate'].resetFields();
+                        this.showAddAttributeCategory = false; // 切换到
+                        this.$notify({
+                            title: '操作成功',
+                            type: 'success',
+                            message: '成功新增一项分类'
+                        });
+                    }
+                })
+            },
+
+            // handleDeleteGood(good) {
+            //   const h = this.$createElement;
+            //   this.$msgbox({
+            //     title: '提示',
+            //     message: h('p', null, [
+            //       h('span', null, '此操作将删除商品'),
+            //       h('span', {style: 'color: #ca2230'}, `${good.name}`)
+            //     ]),
+            //     showCancelButton: true,
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '取消',
+            //   }).then(() => {
+            //     return this.handleApiMethods({
+            //       method: 'deleteGood',
+            //       payload: {
+            //         id: good.id
+            //       }
+            //     })
+            //   }).then(() => {
+            //     this.$message({
+            //       type: 'success',
+            //       message: '删除成功!'
+            //     });
+            //     return this.getGoods();
+            //   }).catch(err => {
+            //     this.$message({
+            //       type: 'success',
+            //       message: '取消成功'
+            //     });
+            //   });
+            // },
+
+            handleAddCategory(status) {
+                this.showAddAttributeCategory = status;
+                if (status) {
+                    this.$nextTick(() => {
+                        this.$refs.input.focus();
+                    })
+                }
+            }
+        },
+        mounted() {
+            this.getAttributeCategory();
         }
-      },
-
-      addAttributeCategory () {
-        this.$refs.cate.validate(async valid => {
-          if (valid) {
-            await this.handleAttributeApi({
-              method: 'storeAttribute',
-              payload: this.formAddCate
-            });
-            // this.
-            this.getAttributeCategory({reset: true});
-          }
-        })
-      },
-
-      // handleDeleteGood(good) {
-      //   const h = this.$createElement;
-      //   this.$msgbox({
-      //     title: '提示',
-      //     message: h('p', null, [
-      //       h('span', null, '此操作将删除商品'),
-      //       h('span', {style: 'color: #ca2230'}, `${good.name}`)
-      //     ]),
-      //     showCancelButton: true,
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //   }).then(() => {
-      //     return this.handleApiMethods({
-      //       method: 'deleteGood',
-      //       payload: {
-      //         id: good.id
-      //       }
-      //     })
-      //   }).then(() => {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '删除成功!'
-      //     });
-      //     return this.getGoods();
-      //   }).catch(err => {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '取消成功'
-      //     });
-      //   });
-      // },
-
-      handleAddCategory (status) {
-        this.showAddAttributeCategory = status;
-      }
-    },
-    mounted() {
-      this.getAttributeCategory();
     }
-  }
 </script>
 
 <style scoped>
   >>> .el-form-item {
     margin-bottom: 0;
   }
-  >>> .el-table{
+
+  >>> .el-table {
     border-top: none;
     border-left: none;
   }
@@ -246,27 +261,47 @@
     display: flex;
     font-size: 14px;
 
+    .collapse_line{
+      top: 0;
+      left: 240px;
+      width: 10px;
+      height: 100%;
+      position: absolute;
+      box-shadow: 10px 0 0px rgba(0,0,0,0.2);
+      background: linear-gradient(rgba(0,0,0,0), #409EFF, rgba(0,0,0,0));
+    }
+
     .container {
       height: 100%;
       overflow: auto;
 
+      .edit{
+        color: #409EFF;
+      }
+      .delete{
+        color: #d40f33;
+      }
+
       &.category_wrap {
-        width: 200px;
+        width: 240px;
         padding: 0;
         position: relative;
 
         .category_list {
           padding-bottom: 70px;
+
           .category_item {
             height: 50px;
             display: flex;
             align-items: center;
             margin-left: 16px;
           }
+
           .category_item ~ .category_item {
             border-top: 1px solid #f0f0f0;
           }
-          .category_add{
+
+          .category_add {
             display: flex;
             border-top: 1px solid #f0f0f0;
             align-items: center;
@@ -276,20 +311,23 @@
 
         }
 
-        .add{
+        .add {
           left: 50%;
-          border: none!important;
+          border: none !important;
           bottom: 10px;
           margin: 0;
           padding: 0;
           position: absolute;
-          &:hover{
+
+          &:hover {
             background-color: transparent;
-            .icon{
+
+            .icon {
               box-shadow: none;
             }
           }
-          .icon{
+
+          .icon {
             width: 40px;
             color: #ffffff;
             height: 40px;
@@ -300,14 +338,15 @@
             justify-content: center;
             background-color: #409EFF;
             transition: box-shadow 0.1s ease-in-out;
-            box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
           }
         }
       }
 
-      &.category-info {
+      &.category_info {
         width: 240px;
         padding: 0 15px 0 10px;
+
         p {
           padding-left: 7px;
         }
@@ -316,13 +355,19 @@
       &.attribute_wrap {
         flex: 1;
         padding: 0;
-         border-left: 1px solid #EBEEF5;
-        .table{
+        border-left: 1px solid #EBEEF5;
+
+        .table {
           min-height: calc(100% - 50px);
         }
-        .pagination{
+
+        .pagination {
           margin-top: 10px;
         }
+      }
+
+      &.attribute_info {
+        width: 400px;
       }
     }
   }

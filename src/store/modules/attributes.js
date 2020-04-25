@@ -4,7 +4,7 @@ const state = {
   attributes: [],
   attributesOptions: {
     page: 1,
-    size: 15,
+    size: 20,
     loading: false,
     totalCount: 0,
     totalPages: 1,

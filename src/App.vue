@@ -38,7 +38,7 @@ export default {
     font-weight: bold;
   }
   .light {
-    color: #c20d2e;
+    color: #d40f33;
   }
 
   .pointer{
