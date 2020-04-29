@@ -4,45 +4,47 @@
     <div class="container category_wrap br">
 
       <ul class="category_list">
-        <li class="category_item" @click="current_category = index" :class="{active: current_category === index}"
-            v-for="(i, index) in attributeCategory" :key="i.id">{{i.name}}
+        <li class="category_title">
+          <i class="el-icon-check success bold"></i>开启
+          <i class="el-icon-close light bold"></i>关闭
+          (参数类别)
         </li>
-        <li v-if="showAddAttributeCategory" class="category_add">
-          <el-form ref="cate" :model="formAddCate">
-            <el-form-item prop="name" required>
-              <el-input ref="input" v-model="formAddCate.name" placeholder="请输入名称"
-                        @change="addAttributeCategory"></el-input>
-            </el-form-item>
-          </el-form>
+        <li class="category_item"
+            @click="current_category = index"
+            :class="{active: current_category === index}"
+            v-for="(i, index) in attributeCategory" :key="i.id">
+          <span>
+            <i v-if="i.cate_enabled" class="el-icon-check success bold"></i>
+            <i v-else class="el-icon-close light bold"></i>
+            {{i.name}}</span>
+          <span class="icons">
+            <i class="icon el-icon-edit"
+               title="编辑"
+               @click.stop="setToast('category', i)"></i>
+            <i class="icon el-icon-delete light"
+               title="删除"
+               @click.stop="handleRemove('category', i)"></i>
+          </span>
         </li>
       </ul>
 
       <span v-if="!showAddAttributeCategory" class="add">
-        <i class="icon el-icon-plus" @click="handleAddCategory(true)"></i>
+        <i class="icon el-icon-plus" @click="setToast('category', {})"></i>
       </span>
 
-    </div>
-    <div class="container category_info">
-      <p>分类详情：</p>
-      <el-form :rules="rule" ref="form" :model="currentCategory">
-        <el-form-item label="开启:" label-width="60px" required>
-          <el-switch v-model="currentCategory.cate_enabled" @change="updateCategoryAttribute"></el-switch>
-        </el-form-item>
-        <el-form-item label="名称:" label-width="60px" prop="name">
-          <el-input clearable v-model="currentCategory.name" size="small" placeholder="名称"
-                    @change="updateCategoryAttribute"></el-input>
-        </el-form-item>
-      </el-form>
     </div>
 
 <!--    <div class="collapse_line"></div>-->
     <div class="container attribute_wrap">
-      <el-table class="table" stripe :data="attributes" border v-loading="options.loading">
+      <el-table class="table"
+                height="300"
+                stripe
+                :data="attributes" border v-loading="options.loading">
         <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
         <el-table-column align="center" prop="name"               label="参数名(name)"></el-table-column>
         <el-table-column align="center"             width="200px" label="开启状态">
           <template slot-scope="{row}">
-            <el-switch v-model="row.attr_enabled"></el-switch>
+            <el-switch v-model="row.attr_enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column align="center" label="所属分类">
@@ -63,18 +65,28 @@
         :total="options.totalCount">
       </el-pagination>
     </div>
+
+    <!--  编辑分类  -->
+    <v-category :visible.sync="form_category.show"
+                :data="form_category.data"
+                @submit="handleSubmit"></v-category>
+
+    <!--  编辑参数  -->
+<!--    <v-category :visible.sync="form_attribute.show"-->
+<!--                :data="form_attribute.data"-->
+<!--                @submit="(form) => {handleSubmit('attr', form)}"></v-category>-->
   </div>
 </template>
 
 <script>
     import {mapActions, mapState} from 'vuex';
     import SearchBar from '../../components/SearchBar';
+    import {VAttribute, VCategory} from './components';
 
     export default {
         data() {
             return {
                 current_category: 0,
-                currentCategory: {}, // 当前选中的参数分类项
                 showAddAttributeCategory: false, // 打开新增参数分类弹窗
                 rule: {
                     name: [
@@ -85,13 +97,24 @@
                         }
                     ]
                 },
-                formAddCate: {
-                    name: '',
+
+                // 分类
+                form_category: {
+                    show: false,
+                    data: {}
+                },
+
+                // 参数
+                form_attribute: {
+                    show: false,
+                    data: {}
                 }
             }
         },
         components: {
+            VCategory,
             SearchBar,
+            VAttribute
         },
         computed: {
             ...mapState('attributes', {
@@ -109,7 +132,6 @@
         watch: {
             computedCurrentCategory: {
                 handler(nVal) {
-                    this.currentCategory = Object.assign({}, nVal);
                     this.setAttributeOptions({page: 1});
                     this.getAttributes({id: nVal.id});
                 }
@@ -129,84 +151,100 @@
             },
 
             /**
-             * 更新参数
+             * method 设置编辑弹窗的值
              */
-            updateCategoryAttribute() {
-                if (this.currentCategory.id) {
-                    this.$refs.form.validate(async valid => {
-                        if (valid) {
-                            const params = Object.assign({}, this.currentCategory);
-                            params.enabled = params.cate_enabled ? 1 : 0;
-                            delete params.cate_enabled;
-                            await this.handleAttributeApi({
-                                method: 'storeAttribute',
-                                payload: params
-                            });
-                            this.getAttributeCategory({reset: true});
-                        }
-                    });
+            setToast (model, data) {
+                this['form_' + model] = {
+                    show: true,
+                    data: (data || {})
                 }
             },
 
-            addAttributeCategory() {
-                this.$refs.cate.validate(async valid => {
-                    if (valid) {
-                        await this.handleAttributeApi({
-                            method: 'storeAttribute',
-                            payload: this.formAddCate
-                        });
-                        this.getAttributeCategory({reset: true});
-                        this.$refs['cate'].resetFields();
-                        this.showAddAttributeCategory = false; // 切换到
-                        this.$notify({
-                            title: '操作成功',
-                            type: 'success',
-                            message: '成功新增一项分类'
-                        });
-                    }
+            /**
+             * method 关闭编辑分类弹窗
+             */
+            clearToast (model) {
+                this['form_' + model] = {
+                    show: false,
+                    data: {}
+                }
+            },
+
+            handleRemove (model, i) {
+                this.removeOne({
+                    ...i,
+                    model
                 })
             },
 
-            // handleDeleteGood(good) {
-            //   const h = this.$createElement;
-            //   this.$msgbox({
-            //     title: '提示',
-            //     message: h('p', null, [
-            //       h('span', null, '此操作将删除商品'),
-            //       h('span', {style: 'color: #ca2230'}, `${good.name}`)
-            //     ]),
-            //     showCancelButton: true,
-            //     confirmButtonText: '确定',
-            //     cancelButtonText: '取消',
-            //   }).then(() => {
-            //     return this.handleApiMethods({
-            //       method: 'deleteGood',
-            //       payload: {
-            //         id: good.id
-            //       }
-            //     })
-            //   }).then(() => {
-            //     this.$message({
-            //       type: 'success',
-            //       message: '删除成功!'
-            //     });
-            //     return this.getGoods();
-            //   }).catch(err => {
-            //     this.$message({
-            //       type: 'success',
-            //       message: '取消成功'
-            //     });
-            //   });
-            // },
-
-            handleAddCategory(status) {
-                this.showAddAttributeCategory = status;
-                if (status) {
-                    this.$nextTick(() => {
-                        this.$refs.input.focus();
+            removeOne (payload) {
+                const h = this.$createElement;
+                const {model, name, id} = payload;
+                console.log(id, model)
+                this.$msgbox({
+                    title: '温馨提示',
+                    message: h('p', null, [
+                        h('span', null, '确认删除'),
+                        h('b', {style: 'color: #d40f33;margin: 0 4px'}, name),
+                        '吗?'
+                    ]),
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.handleAttributeApi({
+                        method: 'remove',
+                        payload: {id, model}
+                    }).then(() => {
+                        this.$notify({
+                            type: "success",
+                            message: '删除成功',
+                        });
+                        if (model === 'category') this.getAttributeCategory({reset: true});
+                        else this.getAttributes({id: this.currentCategoryId})
                     })
-                }
+                }).catch(err => {
+                    console.log(err);
+                })
+
+            },
+
+
+            /**
+             * event handler 监听编辑分类弹窗提交
+             * @param form
+             */
+            handleSubmit (form) {
+                let payload = Object.assign({}, form),
+                    {text, model} = payload;
+
+                delete payload.text;
+
+                this.handleAttributeApi({
+                    method: 'edit',
+                    payload
+                }).then(() => {
+                    this.$notify({
+                        type: "success",
+                        message: text + '成功',
+                    });
+
+                    this.clearToast(model);
+                    if (model === 'category') this.getAttributeCategory({reset: true});
+                    else this.getAttributes({id: this.currentCategoryId});
+                })
+            },
+
+
+            handleChangeAttrEnabled (row) {
+                this.handleSubmit({
+                    id: row.id,
+                    text: '修改',
+                    model: 'attribute',
+                    enabled: row.attr_enabled ? 1 : 0
+                });
             }
+
         },
         mounted() {
             this.getAttributeCategory();
@@ -231,6 +269,7 @@
     list-style: none;
 
     li {
+      color: #565656;
       cursor: pointer;
       height: 50px;
       padding: 0;
@@ -238,13 +277,12 @@
       padding-left: 10px;
 
       &.active {
-        color: #409EFF;
         font-weight: bold;
         background-color: #f3f5f7;
       }
 
       &:hover {
-        color: #409EFF;
+        font-weight: bold;
         background-color: #f3f5f7;
       }
     }
@@ -290,11 +328,43 @@
         .category_list {
           padding-bottom: 70px;
 
+          .category_title{
+            color: #565656;
+            font-size: 12px;
+            text-align: center;
+            line-height: 50px;
+            padding-left: 26px;
+            padding-right: 20px;
+            &:hover{
+              font-weight: normal;
+              background-color: transparent;
+            }
+            span{
+              font-size: 10px;
+            }
+          }
+
           .category_item {
             height: 50px;
             display: flex;
             align-items: center;
             margin-left: 16px;
+            justify-content: space-between;
+            .icons{
+              display: none;
+              .icon{
+                font-size: 16px;
+                margin-right: 10px;
+                &:hover{
+                  color: #409EFF;
+                }
+              }
+            }
+            &:hover{
+              .icons{
+                display: flex;
+              }
+            }
           }
 
           .category_item ~ .category_item {
@@ -343,20 +413,11 @@
         }
       }
 
-      &.category_info {
-        width: 240px;
-        padding: 0 15px 0 10px;
-        background-color: #f3f5f7;
-
-        p {
-          padding-left: 7px;
-        }
-      }
-
       &.attribute_wrap {
         flex: 1;
         padding: 0;
         border-left: 1px solid #EBEEF5;
+        background-color: #f3f5f7;
 
         .table {
           min-height: calc(100% - 50px);

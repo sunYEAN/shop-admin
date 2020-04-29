@@ -105,3 +105,13 @@ export function param2Obj(url) {
       '"}'
   )
 }
+
+
+/**
+ * 判断两个对象是否完全相等
+ * @param o1
+ * @param o2
+ */
+export function isEqual(o1, o2) {
+
+}

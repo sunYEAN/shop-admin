@@ -40,7 +40,9 @@ export default {
   .light {
     color: #d40f33;
   }
-
+  .success{
+    color: #67C23A;
+  }
   .pointer{
     cursor: pointer;
   }

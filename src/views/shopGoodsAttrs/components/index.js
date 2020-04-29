@@ -1,6 +1,5 @@
-import GoodsAlbum from './GoodsAlbum';
-import GoodsAttribute from './GoodsAttribute';
-import '../../assets/update.css';
+import Category from './category';
+import Attribute from './attribute';
 
 function WithBaseCard(Component) {
   return {
@@ -45,11 +44,11 @@ function WithBaseCard(Component) {
   }
 }
 
-const GoodAlbum = WithBaseCard(GoodsAlbum);
-const GoodAttr = WithBaseCard(GoodsAttribute);
+const VCategory = WithBaseCard(Category);
+const VAttribute = WithBaseCard(Attribute);
 
 
 export {
-  GoodAlbum,
-  GoodAttr
+  VCategory,
+  VAttribute
 };
