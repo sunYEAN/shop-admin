@@ -35,7 +35,7 @@
       </el-form>
     </div>
 
-    <div class="collapse_line"></div>
+<!--    <div class="collapse_line"></div>-->
     <div class="container attribute_wrap">
       <el-table class="table" stripe :data="attributes" border v-loading="options.loading">
         <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
@@ -63,7 +63,6 @@
         :total="options.totalCount">
       </el-pagination>
     </div>
-    <div class="container attribute_info"></div>
   </div>
 </template>
 
@@ -286,6 +285,7 @@
         width: 240px;
         padding: 0;
         position: relative;
+        border-right: 8px solid #f3f5f7;
 
         .category_list {
           padding-bottom: 70px;
