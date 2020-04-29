@@ -346,6 +346,7 @@
       &.category_info {
         width: 240px;
         padding: 0 15px 0 10px;
+        background-color: #f3f5f7;
 
         p {
           padding-left: 7px;
