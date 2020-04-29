@@ -7,13 +7,28 @@
     <el-form class="form_main" ref="cate" :model="form">
       <el-form-item prop="name"
                     required
-                    label="分类名称"
+                    label="参数名称"
                     label-width="80px">
         <el-input ref="input"
                   size="small"
                   v-model="form.name"
                   clearable
                   placeholder="请输入名称"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="name"
+                    required
+                    label="所属分类"
+                    label-width="80px">
+        <el-select size="small"
+                   v-model="form.attribute_category_id"
+                   placeholder="请选择">
+          <el-option v-for="i in categories" :key="i.id" :value="i.id" :label="i.name"></el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="权重" label-width="80px" required>
+        <el-input-number v-model="form.sort_order" :min="0"></el-input-number>
       </el-form-item>
 
       <el-form-item prop="enabled"
@@ -42,18 +57,31 @@
             data: {
                 type: Object,
                 default: () => ({})
+            },
+            categories: {
+                type: Array,
+                default: () => []
             }
         },
         watch: {
             data: {
                 handler(nVal) {
                     if (nVal.id) {
-                        const {id, name, cate_enabled} = nVal;
-                        this.form = {id, name, enabled: cate_enabled};
+                        const {id, name, attr_enabled, sort_order, attribute_category_id} = nVal;
+                        this.form = {
+                            id,
+                            name,
+                            sort_order,
+                            enabled: attr_enabled,
+                            attribute_category_id
+                        };
                     } else {
                         this.form = {
+                            id: '',
                             name: '',
-                            enabled: true
+                            enabled: true,
+                            sort_order: 0,
+                            attribute_category_id: '',
                         }
                     }
                 },
@@ -63,8 +91,11 @@
         data() {
             return {
                 form: {
+                    id: '',
                     name: '',
                     enabled: true,
+                    sort_order: 0,
+                    attribute_category_id: '',
                 }
             }
         },
@@ -82,14 +113,15 @@
             submit() {
                 this.$refs.cate.validate(async valid => {
                     if (valid) {
-                        const {id, name, enabled} = this.form;
+                        const {id, name, enabled, sort_order, attribute_category_id} = this.form;
 
-                        // 值没变
-                        if (name === this.data.name && enabled === this.data.cate_enabled) return;
                         this.$emit('submit', {
                             id,
+                            name,
+                            model: 'attribute',
                             text: this.title,
-                            name: name,
+                            sort_order,
+                            attribute_category_id,
                             enabled: enabled ? 1 : 0
                         })
                     }

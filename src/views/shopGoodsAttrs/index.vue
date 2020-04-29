@@ -52,8 +52,8 @@
         </el-table-column>
         <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="{row}">
-            <a class="edit" title="编辑"><i class="el-icon-edit"></i></a>
-            <a class="delete" title="删除"><i class="el-icon-delete"></i></a>
+            <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
+            <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
           </template>
         </el-table-column>
       </el-table>
@@ -72,9 +72,10 @@
                 @submit="handleSubmit"></v-category>
 
     <!--  编辑参数  -->
-<!--    <v-category :visible.sync="form_attribute.show"-->
-<!--                :data="form_attribute.data"-->
-<!--                @submit="(form) => {handleSubmit('attr', form)}"></v-category>-->
+    <v-attribute :visible.sync="form_attribute.show"
+                :data="form_attribute.data"
+               :categories="attributeCategory"
+                @submit="handleSubmit"></v-attribute>
   </div>
 </template>
 
@@ -154,6 +155,7 @@
              * method 设置编辑弹窗的值
              */
             setToast (model, data) {
+                console.log(model, data)
                 this['form_' + model] = {
                     show: true,
                     data: (data || {})
