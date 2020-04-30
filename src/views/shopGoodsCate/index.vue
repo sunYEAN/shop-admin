@@ -1,130 +1,83 @@
 <template>
-  <div class="cate_container">
+  <div class="container">
+    <el-header class="header">
+      <el-button type="primary" size="small" icon="el-icon-edit" @click="handleAddCate">新增</el-button>
+    </el-header>
+    <el-container class="main">
+      <!--      <tree :data="calculateCatalogs"></tree>-->
+      <ul>
+        <li v-for="i in catalogs" :key="i.id">{{i.name}}</li>
+      </ul>
 
-    <div class="container sup">
-      <div class="sup_list">
-        <ul class="">
-          <li v-for="sup in calculateCatalogs" :key="sup.id">
-            {{sup.name}}
-          </li>
-        </ul>
-      </div>
+      <el-table :>
+        <el-table-column></el-table-column>
+      </el-table>
 
-      <div class="sup_info">
-
-      </div>
-    </div>
-    <div class="container sub"></div>
-
+    </el-container>
   </div>
 </template>
 
 <script>
-import {mapActions, mapState} from 'vuex';
-export default {
-  data() {
-    return {
-      current_cate: 0,
-      currentSupCate: {},
-      form: {
-        name: '',
-        front_name: '',
-        front_desc: '',
-        parent_id: '',
-        sort_order: 0,
-        show_index: 0,
-        is_show: 1,
-        banner_url: '',
-        icon_url: '',
-        img_ur: '',
-        wap_banner_url: '',
-        level: 'L1',
-        type: '',
-      },
-      edit: false,
-    }
-  },
-  computed: {
-    ...mapState('goods', {
-      catalogs: state => state.catalogs
-    }),
-    calculateCatalogs () {
-      const catalogs = this.catalogs;
-      const temp = {};
+    import Tree from '../../components/Tree';
+    import {mapActions, mapState} from 'vuex';
 
-      catalogs.forEach(item => {
-        item.children = [];
-        if (!item.parent_id) {
-          temp[item.id] = item;
-        } else {
-          if (!temp[item.parent_id]) {
-            temp[item.parent_id] = {
-              children: []
+    export default {
+        data() {
+            return {
+                form: {
+                    name: '',
+                    front_name: '',
+                    front_desc: '',
+                    parent_id: '',
+                    sort_order: 0,
+                    show_index: 0,
+                    is_show: 1,
+                    banner_url: '',
+                    icon_url: '',
+                    img_ur: '',
+                    wap_banner_url: '',
+                    level: 'L1',
+                    type: '',
+                },
+                edit: false,
+                current_sup: ''
             }
-          } else {
-            temp[item.parent_id].children.push(item);
-          }
+        },
+        components: {
+            Tree
+        },
+        computed: {
+            ...mapState('goods', {
+                catalogs: state => state.catalogs
+            }),
+        },
+        methods: {
+            ...mapActions('goods', [
+                'getGoodsCatalogs'
+            ]),
+            handleAddCate() {
+                this.edit = true;
+            }
+        },
+        mounted() {
+            this.getGoodsCatalogs();
         }
-      });
-
-      return temp;
-    },
-    supCate () {
-      return this.calculateCatalogs()
     }
-  },
-  methods: {
-    ...mapActions('goods', [
-      'getGoodsCatalogs'
-    ]),
-  },
-  mounted() {
-    this.getGoodsCatalogs();
-  }
-}
 </script>
 
 <style scoped lang="less">
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      cursor: pointer;
-      height: 50px;
-      padding: 0;
-      box-sizing: border-box;
-      padding-left: 10px;
-
-      &.active {
-        color: #409EFF;
-        font-weight: bold;
-        background-color: #f3f5f7;
-      }
-
-      &:hover {
-        color: #409EFF;
-        background-color: #f3f5f7;
-      }
-    }
+  .line {
+    text-align: center;
   }
-  .cate_container{
-    font-size: 14px;
-    .container{
-      &.sup{
-        .sup_list{
-          width: 200px;
-          ul{
-            li{
-              display: flex;
-              align-items: center;
-            }
-          }
-        }
-      }
-      &.sub{}
+
+  .container {
+    padding: 0 20px;
+
+    .header {
+      display: flex;
+      padding: 10px 20px;
+      align-items: center;
+      justify-content: flex-end;
     }
   }
 </style>

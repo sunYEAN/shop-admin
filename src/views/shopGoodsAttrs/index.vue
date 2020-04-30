@@ -2,47 +2,49 @@
   <div class="attributes-container">
 
     <div class="container category_wrap br">
+
       <ul class="category_list">
-        <li class="category_item" @click="current_category = index" :class="{active: current_category === index}"
-            v-for="(i, index) in attributeCategory" :key="i.id">{{i.name}}
+        <li class="category_title">
+          <i class="el-icon-check success bold"></i>开启
+          <i class="el-icon-close light bold"></i>关闭
+          (参数类别)
+        </li>
+        <li class="category_item"
+            @click="current_category = index"
+            :class="{active: current_category === index}"
+            v-for="(i, index) in attributeCategory" :key="i.id">
+          <span>
+            <i v-if="i.cate_enabled" class="el-icon-check success bold"></i>
+            <i v-else class="el-icon-close light bold"></i>
+            {{i.name}}</span>
+          <span class="icons">
+            <i class="icon el-icon-edit"
+               title="编辑"
+               @click.stop="setToast('category', i)"></i>
+            <i class="icon el-icon-delete light"
+               title="删除"
+               @click.stop="handleRemove('category', i)"></i>
+          </span>
         </li>
       </ul>
+
+      <span v-if="!showAddAttributeCategory" class="add">
+        <i class="icon el-icon-plus" @click="setToast('category', {})"></i>
+      </span>
+
     </div>
 
-    <span class="add" @click="handleAddCategory(true)">
-      <i class="icon el-icon-plus"></i>
-    </span>
-
-    <div class="container category_info">
-      <p>分类详情：</p>
-      <el-form :rules="rule" ref="form" :model="currentCategory">
-        <el-form-item label="开启:"
-                      label-width="60px"
-                      required>
-          <el-switch v-model="currentCategory.cate_enabled"
-                     @change="updateCategoryAttribute"></el-switch>
-        </el-form-item>
-        <el-form-item prop="name"
-                      label="名称:"
-                      label-width="60px">
-          <el-input size="small"
-                    clearable
-                    placeholder="名称"
-                    v-model="currentCategory.name"
-                    @change="updateCategoryAttribute"></el-input>
-        </el-form-item>
-      </el-form>
-    </div>
-
-    <div class="collapse_line"></div>
-
+<!--    <div class="collapse_line"></div>-->
     <div class="container attribute_wrap">
-      <el-table class="table" stripe :data="attributes" border v-loading="options.loading">
-        <el-table-column align="center" label="ID" prop="id" width="100px"></el-table-column>
-        <el-table-column align="center" label="参数名(name)" prop="name"></el-table-column>
-        <el-table-column align="center" label="开启状态" width="200px">
+      <el-table class="table"
+                height="300"
+                stripe
+                :data="attributes" border v-loading="options.loading">
+        <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
+        <el-table-column align="center" prop="name"               label="参数名(name)"></el-table-column>
+        <el-table-column align="center"             width="200px" label="开启状态">
           <template slot-scope="{row}">
-            <el-switch v-model="row.attr_enabled" @change="updateAttributeSwitch(row)"></el-switch>
+            <el-switch v-model="row.attr_enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column align="center" label="所属分类">
@@ -50,9 +52,8 @@
         </el-table-column>
         <el-table-column align="center" label="操作" width="200px">
           <template slot-scope="{row}">
-            <a class="action edit" @click="handleAction(row, 'view')" title="查看">查看</a>
-            <a class="action edit" @click="handleAction(row, 'edit')" title="编辑">编辑</a>
-            <a class="action delete" @click="handleAction(row, 'delete')" title="删除">删除</a>
+            <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
+            <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
           </template>
         </el-table-column>
       </el-table>
@@ -65,234 +66,202 @@
       </el-pagination>
     </div>
 
-    <div v-show="" class="container attribute_info">
-      <p>参数详情</p>
+    <!--  编辑分类  -->
+    <v-category :visible.sync="form_category.show"
+                :data="form_category.data"
+                @submit="handleSubmit"></v-category>
 
-    </div>
-
-    <!--增加一个参数分类--->
-    <el-dialog title="新增参数分类" :visible.sync="showAddAttributeCategory">
-      <el-form ref="cate" :model="formAddCate">
-        <el-form-item prop="name" label="分类名称:" label-width="85px" required>
-          <el-input size="small" ref="input" v-model="formAddCate.name" placeholder="请输入名称"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <div style="text-align: right">
-            <el-button size="small" type="default" @click="handleAddCategory(false)">取消</el-button>
-            <el-button size="small" type="primary" @click="addAttributeCategory">保存</el-button>
-          </div>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <attribute-form-card
-      @save="updateAttributeSwitch"
-      :visible.sync="attribute.visible"
-      :category="attributeCategory"
-      :attribute="attribute.params"></attribute-form-card>
+    <!--  编辑参数  -->
+    <v-attribute :visible.sync="form_attribute.show"
+                :data="form_attribute.data"
+               :categories="attributeCategory"
+                @submit="handleSubmit"></v-attribute>
   </div>
 </template>
 
 <script>
-  import {mapActions, mapState} from 'vuex';
-  import SearchBar from '../../components/SearchBar';
-  import {AttributeFormCard} from "./components";
+    import {mapActions, mapState} from 'vuex';
+    import SearchBar from '../../components/SearchBar';
+    import {VAttribute, VCategory} from './components';
 
-  export default {
-    data() {
-      return {
-        current_category: 0,
-        currentCategory: {}, // 当前选中的参数分类项
-        currentAttribute: {}, // 当前选中的参数
-        showAddAttributeCategory: false, // 打开新增参数分类弹窗
-        formAddCate: {
-          name: '',
-        },
-        rule: {
-          name: [
-            {
-              required: true,
-              message: '请填写一个名称...',
-              trigger: 'blur'
+    export default {
+        data() {
+            return {
+                current_category: 0,
+                showAddAttributeCategory: false, // 打开新增参数分类弹窗
+                rule: {
+                    name: [
+                        {
+                            required: true,
+                            message: '请填写一个名称...',
+                            trigger: 'change'
+                        }
+                    ]
+                },
+
+                // 分类
+                form_category: {
+                    show: false,
+                    data: {}
+                },
+
+                // 参数
+                form_attribute: {
+                    show: false,
+                    data: {}
+                }
             }
-          ]
         },
-
-        attribute: {
-          visible: false,
-          params: {}
-        }
-      }
-    },
-    components: {
-      AttributeFormCard,
-      SearchBar,
-    },
-    computed: {
-      ...mapState('attributes', {
-        options: state => state.attributesOptions,
-        attributes: state => state.attributes,
-        attributeCategory: state => state.attributeCategory,
-      }),
-      computedCurrentCategory() {
-        return this.attributeCategory[this.current_category] || {};
-      },
-      currentCategoryId() {
-        return this.computedCurrentCategory.id || '';
-      }
-    },
-    watch: {
-      computedCurrentCategory: {
-        handler(nVal) {
-          this.currentCategory = Object.assign({}, nVal);
-          this.setAttributeOptions({page: 1});
-          this.getAttributes({id: nVal.id});
-        }
-      }
-    },
-    methods: {
-      ...mapActions('attributes', [
-        'getAttributes',
-        'handleAttributeApi',
-        'setAttributeOptions',
-        'getAttributeCategory',
-      ]),
-
-      notify(message) {
-        this.$notify({
-          type: 'success',
-          title: '提示',
-          message: message
-        })
-      },
-
-      resetPage() {
-        this.current_category = 0;
-        this.getAttributeCategory({reset: true});
-      },
-
-      setAttributeCard(row) {
-        this.attribute = {
-          visible: true,
-          params: row
-        }
-      },
-
-      /**
-       * 新增一项分类
-       */
-      addAttributeCategory() {
-        return new Promise((resolve, reject) => {
-          this.$refs.cate.validate(async valid => {
-            if (valid) {
-              await this.handleAttributeApi({
-                method: 'storeCategory',
-                payload: this.formAddCate
-              });
-              this.$refs['cate'].resetFields();
-              this.resetPage(); // 重置页面数据
-              this.handleAddCategory(false); // 切换到
-              this.notify('成功修改一条数据');
-            } else reject();
-          })
-        });
-      },
-      /**
-       * 更新参数分类
-       */
-      async updateCategoryAttribute() {
-        if (this.currentCategory.id) {
-          this.$refs.form.validate(async valid => {
-            if (valid) {
-              const params = Object.assign({}, this.currentCategory);
-              params.enabled = params.cate_enabled ? 1 : 0;
-              delete params.cate_enabled;
-              await this.handleAttributeApi({
-                method: 'storeCategory',
-                payload: params
-              });
-              this.getAttributeCategory({reset: true});
-              this.notify('成功修改一条数据');
+        components: {
+            VCategory,
+            SearchBar,
+            VAttribute
+        },
+        computed: {
+            ...mapState('attributes', {
+                options: state => state.attributesOptions,
+                attributes: state => state.attributes,
+                attributeCategory: state => state.attributeCategory,
+            }),
+            computedCurrentCategory() {
+                return this.attributeCategory[this.current_category] || {};
+            },
+            currentCategoryId() {
+                return this.computedCurrentCategory.id || '';
             }
-          });
+        },
+        watch: {
+            computedCurrentCategory: {
+                handler(nVal) {
+                    this.setAttributeOptions({page: 1});
+                    this.getAttributes({id: nVal.id});
+                }
+            }
+        },
+        methods: {
+            ...mapActions('attributes', [
+                'getAttributes',
+                'handleAttributeApi',
+                'setAttributeOptions',
+                'getAttributeCategory',
+            ]),
+
+            handlePageChange(page) {
+                this.setAttributeOptions({page});
+                this.getAttributes({id: this.currentCategoryId});
+            },
+
+            /**
+             * method 设置编辑弹窗的值
+             */
+            setToast (model, data) {
+                console.log(model, data)
+                this['form_' + model] = {
+                    show: true,
+                    data: (data || {})
+                }
+            },
+
+            /**
+             * method 关闭编辑分类弹窗
+             */
+            clearToast (model) {
+                this['form_' + model] = {
+                    show: false,
+                    data: {}
+                }
+            },
+
+            handleRemove (model, i) {
+                this.removeOne({
+                    ...i,
+                    model
+                })
+            },
+
+            removeOne (payload) {
+                const h = this.$createElement;
+                const {model, name, id} = payload;
+                console.log(id, model)
+                this.$msgbox({
+                    title: '温馨提示',
+                    message: h('p', null, [
+                        h('span', null, '确认删除'),
+                        h('b', {style: 'color: #d40f33;margin: 0 4px'}, name),
+                        '吗?'
+                    ]),
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.handleAttributeApi({
+                        method: 'remove',
+                        payload: {id, model}
+                    }).then(() => {
+                        this.$notify({
+                            type: "success",
+                            message: '删除成功',
+                        });
+                        if (model === 'category') this.getAttributeCategory({reset: true});
+                        else this.getAttributes({id: this.currentCategoryId})
+                    })
+                }).catch(err => {
+                    console.log(err);
+                })
+
+            },
+
+
+            /**
+             * event handler 监听编辑分类弹窗提交
+             * @param form
+             */
+            handleSubmit (form) {
+                let payload = Object.assign({}, form),
+                    {text, model} = payload;
+
+                delete payload.text;
+
+                this.handleAttributeApi({
+                    method: 'edit',
+                    payload
+                }).then(() => {
+                    this.$notify({
+                        type: "success",
+                        message: text + '成功',
+                    });
+
+                    this.clearToast(model);
+                    if (model === 'category') this.getAttributeCategory({reset: true});
+                    else this.getAttributes({id: this.currentCategoryId});
+                })
+            },
+
+
+            handleChangeAttrEnabled (row) {
+                this.handleSubmit({
+                    id: row.id,
+                    text: '修改',
+                    model: 'attribute',
+                    enabled: row.attr_enabled ? 1 : 0
+                });
+            }
+
+        },
+        mounted() {
+            this.getAttributeCategory();
         }
-      },
-
-      /**
-       * 更新参数
-       * @param row
-       */
-      async updateAttributeSwitch(row) {
-        let {id, name, sort_order, attribute_category_id} = row,
-          enabled = row.enabled || row.attr_enabled;
-
-        enabled = enabled ? 1 : 0;
-        await this.handleAttributeApi({
-          method: 'storeAttribute',
-          payload: {id, name, enabled, sort_order, attribute_category_id}
-        });
-        this.getAttributes({id: this.currentCategoryId});
-        this.notify('成功修改一条数据');
-      },
-
-      /**
-       * event handler 开启、关闭新增分类弹窗
-       * @param status
-       */
-      handleAddCategory(status) {
-        this.showAddAttributeCategory = status;
-      },
-
-      /**
-       * event handler 页面切换
-       * @param page
-       */
-      handlePageChange(page) {
-        this.setAttributeOptions({page});
-        this.getAttributes({id: this.currentCategoryId});
-      },
-
-      /**
-       * event handler 参数中的actions
-       * @param row
-       * @param type
-       */
-      handleAction(row, type) {
-        switch (type) {
-          case 'view':
-            this.setAttributeCard({...row, id: '',});
-            break;
-          case 'edit':
-            this.setAttributeCard(row);
-            break;
-          case 'delete':
-            this.handleAttributeApi({
-              method: 'deleteAttribute',
-              payload: {
-                id: row.id
-              }
-            }).then(() => {
-              this.getAttributes({id: this.currentCategoryId});
-              this.notify('成功删除一条数据');
-            });
-            break;
-        }
-      },
-    },
-    mounted() {
-      this.resetPage();
     }
-  }
 </script>
 
 <style scoped>
+  >>> .el-form-item {
+    margin-bottom: 0;
+  }
+
   >>> .el-table {
     border-top: none;
     border-left: none;
-  }
-
-  .category_info >>> .el-form-item {
-    margin-bottom: 0;
   }
 </style>
 <style scoped lang="less">
@@ -302,6 +271,7 @@
     list-style: none;
 
     li {
+      color: #565656;
       cursor: pointer;
       height: 50px;
       padding: 0;
@@ -309,13 +279,12 @@
       padding-left: 10px;
 
       &.active {
-        color: #409EFF;
         font-weight: bold;
         background-color: #f3f5f7;
       }
 
       &:hover {
-        color: #409EFF;
+        font-weight: bold;
         background-color: #f3f5f7;
       }
     }
@@ -329,57 +298,75 @@
     color: #343434;
     height: 100%;
     display: flex;
-    position: relative;
     font-size: 14px;
 
-    .add {
-      left: 100px;
-      color: #ffffff;
-      width: 40px;
-      height: 40px;
-      bottom: 10px;
-      display: flex;
-      position: absolute;
-      font-size: 20px;
-      align-items: center;
-      border-radius: 50%;
-      justify-content: center;
-      background-color: #409EFF;
-    }
-
-    .collapse_line {
+    .collapse_line{
       top: 0;
       left: 240px;
       width: 10px;
       height: 100%;
       position: absolute;
+      box-shadow: 10px 0 0px rgba(0,0,0,0.2);
+      background: linear-gradient(rgba(0,0,0,0), #409EFF, rgba(0,0,0,0));
     }
 
     .container {
       height: 100%;
       overflow: auto;
 
-      .edit {
+      .edit{
         color: #409EFF;
       }
-
-      .delete {
-        color: #d4207c;
+      .delete{
+        color: #d40f33;
       }
 
       &.category_wrap {
         width: 240px;
         padding: 0;
         position: relative;
+        border-right: 8px solid #f3f5f7;
 
         .category_list {
           padding-bottom: 70px;
+
+          .category_title{
+            color: #565656;
+            font-size: 12px;
+            text-align: center;
+            line-height: 50px;
+            padding-left: 26px;
+            padding-right: 20px;
+            &:hover{
+              font-weight: normal;
+              background-color: transparent;
+            }
+            span{
+              font-size: 10px;
+            }
+          }
 
           .category_item {
             height: 50px;
             display: flex;
             align-items: center;
             margin-left: 16px;
+            justify-content: space-between;
+            .icons{
+              display: none;
+              .icon{
+                font-size: 16px;
+                margin-right: 10px;
+                &:hover{
+                  color: #409EFF;
+                }
+              }
+            }
+            &:hover{
+              .icons{
+                display: flex;
+              }
+            }
           }
 
           .category_item ~ .category_item {
@@ -395,14 +382,36 @@
           }
 
         }
-      }
 
-      &.category_info {
-        width: 240px;
-        padding: 0 15px 0 10px;
+        .add {
+          left: 50%;
+          border: none !important;
+          bottom: 10px;
+          margin: 0;
+          padding: 0;
+          position: absolute;
 
-        p {
-          padding-left: 7px;
+          &:hover {
+            background-color: transparent;
+
+            .icon {
+              box-shadow: none;
+            }
+          }
+
+          .icon {
+            width: 40px;
+            color: #ffffff;
+            height: 40px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            border-radius: 50%;
+            justify-content: center;
+            background-color: #409EFF;
+            transition: box-shadow 0.1s ease-in-out;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+          }
         }
       }
 
@@ -410,14 +419,10 @@
         flex: 1;
         padding: 0;
         border-left: 1px solid #EBEEF5;
+        background-color: #f3f5f7;
 
         .table {
           min-height: calc(100% - 50px);
-
-          .action {
-            margin: 0 5px;
-            font-size: 13px;
-          }
         }
 
         .pagination {
@@ -425,6 +430,9 @@
         }
       }
 
+      &.attribute_info {
+        width: 400px;
+      }
     }
   }
 </style>

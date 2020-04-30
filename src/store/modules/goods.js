@@ -40,8 +40,26 @@ const actions = {
   getGoodsCatalogs({commit, state}, params = {}) {
     if (!state.catalogs.length || params.reset) {
       return goodsApi.getGoodsCatalogs().then(res => {
-        const {data} = res;
-        commit('SET_CATALOGS', data);
+
+        const temp = {};
+        const { data } = res;
+
+        data.forEach(item => {
+          item.children = [];
+          if (!item.parent_id) {
+            temp[item.id] = item;
+          } else {
+            if (!temp[item.parent_id]) {
+              temp[item.parent_id] = {
+                children: []
+              }
+            } else {
+              temp[item.parent_id].children.push(item);
+            }
+          }
+        });
+
+        commit('SET_CATALOGS', temp);
       })
     }
   },
@@ -90,7 +108,6 @@ const mutations = {
   },
   ['SET_GOODS_LIST'](state, res) {
     const {data, count, totalPages} = res;
-    console.log(totalPages);
     state.goods = data;
     state.goodsOptions.totalCount = count;
     state.goodsOptions.totalPages = totalPages;
