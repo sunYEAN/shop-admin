@@ -1,34 +1,31 @@
 <template>
-  <div class="container">
-    <el-header class="header">
-      <el-button type="primary" size="small" icon="el-icon-edit" @click="handleAddCate">新增</el-button>
-    </el-header>
-    <el-container class="main">
-      <tree :data="calculateCatalogs"></tree>
-    </el-container>
+  <div class="cate_container">
 
-    <el-dialog title="新增分类" :visible.sync="edit">
-      <el-form>
-        <el-form-item label="名称">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="简介">
-          <el-input v-model="form.front_name"></el-input>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="form.front_desc"></el-input>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <div class="container sup">
+      <div class="sup_list">
+        <ul class="">
+          <li v-for="sup in calculateCatalogs" :key="sup.id">
+            {{sup.name}}
+          </li>
+        </ul>
+      </div>
+
+      <div class="sup_info">
+
+      </div>
+    </div>
+    <div class="container sub"></div>
+
   </div>
 </template>
 
 <script>
-import Tree from '../../components/Tree';
 import {mapActions, mapState} from 'vuex';
 export default {
   data() {
     return {
+      current_cate: 0,
+      currentSupCate: {},
       form: {
         name: '',
         front_name: '',
@@ -46,9 +43,6 @@ export default {
       },
       edit: false,
     }
-  },
-  components: {
-    Tree
   },
   computed: {
     ...mapState('goods', {
@@ -74,15 +68,15 @@ export default {
       });
 
       return temp;
+    },
+    supCate () {
+      return this.calculateCatalogs()
     }
   },
   methods: {
     ...mapActions('goods', [
       'getGoodsCatalogs'
     ]),
-    handleAddCate () {
-      this.edit = true;
-    }
   },
   mounted() {
     this.getGoodsCatalogs();
@@ -91,16 +85,46 @@ export default {
 </script>
 
 <style scoped lang="less">
-  .line{
-    text-align: center;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      cursor: pointer;
+      height: 50px;
+      padding: 0;
+      box-sizing: border-box;
+      padding-left: 10px;
+
+      &.active {
+        color: #409EFF;
+        font-weight: bold;
+        background-color: #f3f5f7;
+      }
+
+      &:hover {
+        color: #409EFF;
+        background-color: #f3f5f7;
+      }
+    }
   }
-  .container {
-    padding: 0 20px;
-    .header{
-      display: flex;
-      padding: 10px 20px;
-      align-items: center;
-      justify-content: flex-end;
+  .cate_container{
+    font-size: 14px;
+    .container{
+      &.sup{
+        .sup_list{
+          width: 200px;
+          ul{
+            li{
+              display: flex;
+              align-items: center;
+            }
+          }
+        }
+      }
+      &.sub{}
     }
   }
 </style>
