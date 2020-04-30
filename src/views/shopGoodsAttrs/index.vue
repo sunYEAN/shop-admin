@@ -36,34 +36,37 @@
 
 <!--    <div class="collapse_line"></div>-->
     <div class="container attribute_wrap">
-      <el-table class="table"
-                height="300"
-                stripe
-                :data="attributes" border v-loading="options.loading">
-        <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
-        <el-table-column align="center" prop="name"               label="参数名(name)"></el-table-column>
-        <el-table-column align="center"             width="200px" label="开启状态">
-          <template slot-scope="{row}">
-            <el-switch v-model="row.attr_enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="所属分类">
-          <template slot-scope="{row}">{{`${row.attribute_category_name}(${row.attribute_category_id})`}}</template>
-        </el-table-column>
-        <el-table-column align="center" label="操作" width="200px">
-          <template slot-scope="{row}">
-            <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
-            <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        class="pagination"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
-        :page-size="options.size"
-        :total="options.totalCount">
-      </el-pagination>
+      <el-button class="attr_add" @click="setToast('attribute', {})" type="primary" size="small">新增</el-button>
+      <div class="attr_table">
+        <el-table class="table"
+                  height="300"
+                  stripe
+                  :data="attributes" border v-loading="options.loading">
+          <el-table-column align="center" prop="id"   width="100px" label="ID"></el-table-column>
+          <el-table-column align="center" prop="name"               label="参数名(name)"></el-table-column>
+          <el-table-column align="center"             width="200px" label="开启状态">
+            <template slot-scope="{row}">
+              <el-switch v-model="row.attr_enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="所属分类">
+            <template slot-scope="{row}">{{`${row.attribute_category_name}(${row.attribute_category_id})`}}</template>
+          </el-table-column>
+          <el-table-column align="center" label="操作" width="200px">
+            <template slot-scope="{row}">
+              <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
+              <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          class="pagination"
+          layout="prev, pager, next"
+          @current-change="handlePageChange"
+          :page-size="options.size"
+          :total="options.totalCount">
+        </el-pagination>
+      </div>
     </div>
 
     <!--  编辑分类  -->
@@ -211,7 +214,6 @@
 
             },
 
-
             /**
              * event handler 监听编辑分类弹窗提交
              * @param form
@@ -237,7 +239,6 @@
                 })
             },
 
-
             handleChangeAttrEnabled (row) {
                 this.handleSubmit({
                     id: row.id,
@@ -245,8 +246,7 @@
                     model: 'attribute',
                     enabled: row.attr_enabled ? 1 : 0
                 });
-            }
-
+            },
         },
         mounted() {
             this.getAttributeCategory();
@@ -325,7 +325,6 @@
         width: 240px;
         padding: 0;
         position: relative;
-        border-right: 8px solid #f3f5f7;
 
         .category_list {
           padding-bottom: 70px;
@@ -417,16 +416,26 @@
 
       &.attribute_wrap {
         flex: 1;
-        padding: 0;
+        padding: 0 6px;
+        display: flex;
         border-left: 1px solid #EBEEF5;
+        flex-direction: column;
         background-color: #f3f5f7;
 
-        .table {
-          min-height: calc(100% - 50px);
+        .attr_add{
+          width: 80px;
+          margin: 10px 0;
+          margin-left: auto;
         }
+        .attr_table{
+          flex: 1;
+          .table {
+            min-height: calc(100% - 50px);
+          }
 
-        .pagination {
-          margin-top: 10px;
+          .pagination {
+            margin-top: 10px;
+          }
         }
       }
 

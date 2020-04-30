@@ -67,10 +67,11 @@
             data: {
                 handler(nVal) {
                     if (nVal.id) {
-                        const {id, name, attr_enabled, sort_order, attribute_category_id} = nVal;
+                        const {id, name, values, attr_enabled, sort_order, attribute_category_id} = nVal;
                         this.form = {
                             id,
                             name,
+                            values,
                             sort_order,
                             enabled: attr_enabled,
                             attribute_category_id
@@ -79,6 +80,7 @@
                         this.form = {
                             id: '',
                             name: '',
+                            values: '',
                             enabled: true,
                             sort_order: 0,
                             attribute_category_id: '',
@@ -93,6 +95,7 @@
                 form: {
                     id: '',
                     name: '',
+                    values: '',
                     enabled: true,
                     sort_order: 0,
                     attribute_category_id: '',
@@ -113,13 +116,14 @@
             submit() {
                 this.$refs.cate.validate(async valid => {
                     if (valid) {
-                        const {id, name, enabled, sort_order, attribute_category_id} = this.form;
+                        const {id, name, enabled, values, sort_order, attribute_category_id} = this.form;
 
                         this.$emit('submit', {
                             id,
                             name,
                             model: 'attribute',
                             text: this.title,
+                            values,
                             sort_order,
                             attribute_category_id,
                             enabled: enabled ? 1 : 0
