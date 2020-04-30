@@ -20,7 +20,6 @@ service.interceptors.request.use((config) => {
 // response interceptor
 service.interceptors.response.use(response => {
   const res = response.data;
-  console.log(res)
   if (!res.errno) return res;
 
   Message({
