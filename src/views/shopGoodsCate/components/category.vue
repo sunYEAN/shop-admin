@@ -131,7 +131,7 @@
         height: 16px;
         cursor: pointer;
         display: block;
-        background: url("../../shopGoodsCate/close.png") no-repeat center center;
+        background: url("../close.png") no-repeat center center;
         background-size: 70%;
       }
     }

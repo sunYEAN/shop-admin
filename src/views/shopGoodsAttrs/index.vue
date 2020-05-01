@@ -28,7 +28,7 @@
         </li>
       </ul>
 
-      <span v-if="!showAddAttributeCategory" class="add">
+      <span class="add">
         <i class="icon el-icon-plus" @click="setToast('category', {})"></i>
       </span>
 
@@ -91,7 +91,6 @@
         data() {
             return {
                 current_category: 0,
-                showAddAttributeCategory: false, // 打开新增参数分类弹窗
                 rule: {
                     name: [
                         {
