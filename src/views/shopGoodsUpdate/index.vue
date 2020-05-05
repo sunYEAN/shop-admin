@@ -6,21 +6,7 @@
         <div class="info">
 
           <el-form-item>
-            <el-upload
-              class="avatar-uploader"
-              name="image"
-              action="/admin/admin/upload/image"
-              list-type="picture-card"
-              :headers="uploadHeader"
-              :show-file-list="false">
-              <div @click.stop v-if="good.list_pic_url" class="wrap">
-                <img :src="good.list_pic_url" class="avatar" alt=""/>
-                <i class="zoom el-icon-zoom-in" @click="handlePreviewImg({url: good.list_pic_url})"></i>
-                <i class="delete el-icon-delete"></i>
-                <span class="check"><i class="el-icon-check"></i></span>
-              </div>
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            <upload-image :url.sync="good.list_pic_url"/>
           </el-form-item>
 
           <div class="number">
@@ -112,81 +98,83 @@
 </template>
 
 <script>
-  import {getToken} from '../../utils/auth';
-  import {mapState, mapActions} from 'vuex';
-  import {GoodAlbum, GoodAttr} from '../../components/GoodUpdate';
+    import {getToken} from '../../utils/auth';
+    import {mapState, mapActions} from 'vuex';
+    import {GoodAlbum, GoodAttr} from '../../components/GoodUpdate';
+    import UploadImage from '../../components/UploadImage';
 
-  export default {
-    name: "GoodUpdate",
-    components: {
-      GoodAlbum,
-      GoodAttr
-    },
-    data() {
-      return {
-        uploadHeader: {
-          'x-token': getToken()
+    export default {
+        name: "GoodUpdate",
+        components: {
+            GoodAlbum,
+            GoodAttr,
+            UploadImage
         },
-        showAlbum: false,
-        showAttrs: false,
-        good: {},
-      }
-    },
-    computed: {
-      ...mapState('goods', {
-        catalogs: state => state.catalogs,
-      }),
-      filterLevelCatalogs() {
-        return this.catalogs.filter(item => item.level === 2);
-      }
-    },
-    methods: {
-      ...mapActions('goods', [
-        'getGoodsCatalogs',
-        'handleApiMethods',
-      ]),
+        data() {
+            return {
+                uploadHeader: {
+                    'x-token': getToken()
+                },
+                showAlbum: false,
+                showAttrs: false,
+                good: {},
+            }
+        },
+        computed: {
+            ...mapState('goods', {
+                catalogs: state => state.catalogs,
+            }),
+            filterLevelCatalogs() {
+                return this.catalogs.filter(item => item.level === 2);
+            }
+        },
+        methods: {
+            ...mapActions('goods', [
+                'getGoodsCatalogs',
+                'handleApiMethods',
+            ]),
 
-      handleMethod(type) {
-        switch (type) {
-          case 'album':
-            this.showAlbum = true;
-            break;
-          case 'attrs':
-            this.showAttrs = true;
-            break;
+            handleMethod(type) {
+                switch (type) {
+                    case 'album':
+                        this.showAlbum = true;
+                        break;
+                    case 'attrs':
+                        this.showAttrs = true;
+                        break;
+                }
+            },
+
+            getGoodDetail(id) {
+                return this.handleApiMethods({
+                    method: 'getGoodById',
+                    payload: {
+                        id
+                    }
+                })
+            },
+            // 相册上传成功
+            handleUploadSuccess(data) {
+                this.handleApiMethods({
+                    method: 'addGallery',
+                    payload: {}
+                })
+            },
+
+
+            getGoodInfo() {
+                const {id} = this.$route.query;
+                this.getGoodDetail(id).then(res => {
+                    this.good = res.data;
+                })
+            },
+        },
+
+        created() {
+            this.getGoodInfo();
+            this.getGoodsCatalogs();
         }
-      },
-
-      getGoodDetail(id) {
-        return this.handleApiMethods({
-          method: 'getGoodById',
-          payload: {
-            id
-          }
-        })
-      },
-      // 相册上传成功
-      handleUploadSuccess(data) {
-        this.handleApiMethods({
-          method: 'addGallery',
-          payload: {}
-        })
-      },
-
-
-      getGoodInfo() {
-        const {id} = this.$route.query;
-        this.getGoodDetail(id).then(res => {
-          this.good = res.data;
-        })
-      },
-    },
-
-    created() {
-      this.getGoodInfo();
-      this.getGoodsCatalogs();
     }
-  }
 </script>
 
 <style scoped>

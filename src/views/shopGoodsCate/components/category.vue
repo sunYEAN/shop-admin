@@ -27,11 +27,11 @@
       </el-form-item>
 
       <!--   upload   -->
-      <el-form-item prop="img_url" label="img_url：" label-width="100px">
+      <el-form-item v-if="!form.parent_id" prop="img_url" label="img_url：" label-width="100px">
         <image-upload :url.sync="form.img_url"></image-upload>
       </el-form-item>
 
-      <el-form-item prop="icon_url" label="icon_url：" label-width="100px">
+      <el-form-item v-if="!form.parent_id" prop="icon_url" label="icon_url：" label-width="100px">
         <image-upload :url.sync="form.icon_url"></image-upload>
       </el-form-item>
 
@@ -43,11 +43,13 @@
         <image-upload :url.sync="form.banner_url"></image-upload>
       </el-form-item>
 
+      <!--   upload end   -->
+
       <el-form-item prop="name" label="关键词：" label-width="100px">
         <el-input ref="input" size="small" v-model="form.keywords" clearable placeholder="请输入关键词"></el-input>
       </el-form-item>
 
-      <el-form-item class="number" prop="sort_order" label="分类排序：" label-width="100px">
+      <el-form-item class="number" prop="sort_order" label="排序权重：" label-width="100px">
         <el-input-number :min="0" size="small" v-model="form.sort_order"></el-input-number>
       </el-form-item>
 
@@ -174,13 +176,6 @@
   >>> .el-form-item {
     margin-top: 14px;
   }
-  >>>.el-upload{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
   >>>.el-input__inner,>>>.el-textarea__inner{
     border: none;
     border-bottom: 1px dashed #e0e0e0;
@@ -227,18 +222,5 @@
 
   .action {
     text-align: right;
-  }
-
-  .upload{
-    width: 100px;
-    height: 100px;
-    border: 1px dashed #e0e0e0;
-    border-radius: 4px;
-    img{
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-    }
   }
 </style>
