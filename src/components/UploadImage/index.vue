@@ -49,7 +49,8 @@
              * 上传成功之后
              */
             handleUploaded (response) {
-                this.$emit('update:url', response.data.url)
+                this.$emit('update:url', response.data.url);
+                this.$emit('success', response);
             },
 
             remove () {

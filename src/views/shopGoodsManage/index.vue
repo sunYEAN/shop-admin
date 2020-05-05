@@ -16,7 +16,7 @@
               <img alt=""
                    class="card_cover"
                    :src="row.list_pic_url"
-                   @click="$preview({url: row.list_pic_url})">
+                   @click="$preview(row.list_pic_url)">
               <div class="card_info">
                 <p class="p lines line1 t">{{row.name}}</p>
                 <p class="p lines line1 d">{{row.goods_brief}}</p>

@@ -8,6 +8,7 @@ export const getGoodById = (params) => request.get('/admin/goods/info', {params}
 
 export const getGoodGallery = (params) => request.get('/admin/gallery/index', {params});
 
+
 /**
  * 新增商品
  * @param params

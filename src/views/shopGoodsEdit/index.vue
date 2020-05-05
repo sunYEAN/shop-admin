@@ -43,7 +43,7 @@
              class="form"
              :model="step1"
              :rules="rule1">
-        <el-form-item prop="goods_desc">
+        <el-form-item style="height: 100%" prop="goods_desc">
           <tiny-editor v-model="step1.goods_desc"></tiny-editor>
         </el-form-item>
 
@@ -301,6 +301,9 @@
   .container >>> .el-step__title {
     font-size: 14px;
   }
+  >>> .el-form-item__content{
+    height: 100%;
+  }
 </style>
 
 <style scoped lang="less">
@@ -320,6 +323,7 @@
     flex: 1;
     margin: 20px 0;
     padding: 20px;
+    height: 100%;
     margin-bottom: 0;
   }
 

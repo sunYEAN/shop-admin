@@ -195,6 +195,7 @@
 
         .main-list {
           flex: 1;
+          width: 75%;
           display: flex;
           flex-wrap: wrap;
 
@@ -240,7 +241,7 @@
         }
 
         .upload-wrap {
-          width: 200px;
+          width: 25%;
           padding: 0 10px 20px 10px;
           position: relative;
           flex-shrink: 0;

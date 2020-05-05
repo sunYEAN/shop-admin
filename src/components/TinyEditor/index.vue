@@ -29,7 +29,7 @@
         },
         data () {
             return {
-                value: '',
+                value: this.html || '',
                 options: {
                     language_url: '/tinymce/langs/zh_CN.js',
                     language: 'zh_CN',
@@ -38,7 +38,23 @@
                     branding: false,
                     menubar: false,
                     plugins: 'lists image media table wordcount',
-                    toolbar: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat',
+                    toolbar: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | view upload',
+                    setup: (editor) => {
+                        editor.ui.registry.addButton('upload', {
+                            tooltip: '上传',
+                            icon: 'upload',
+                            onAction: () => {
+                                this.$emit('upload', this.value);
+                            }
+                        });
+                        editor.ui.registry.addButton('view', {
+                            tooltip: '预览',
+                            icon: 'eyes',
+                            onAction: () => {
+                                this.$emit('preview', this.value);
+                            }
+                        })
+                    },
                     images_upload_handler: (blobInfo, success, fail) => {
                         let formData = new FormData();
                         formData.append('image', blobInfo.blob());
@@ -69,7 +85,9 @@
 
 <style scoped lang="less">
   .tiny-editor{
+    height: 100%;
     .editor{
+      height: 100%;
     }
   }
 </style>

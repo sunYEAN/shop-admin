@@ -58,4 +58,11 @@ export default {
   .container{
     padding: 0 20px;
   }
+
+  .tox-tinymce-aux{
+    z-index: 2010!important;
+  }
+  .tox-tinymce{
+    height: 100%!important;
+  }
 </style>

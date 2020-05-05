@@ -1,5 +1,6 @@
 import GoodsAlbum from './GoodsAlbum';
 import GoodsAttribute from './GoodsAttribute';
+import GoodsEditor from './GoodsEditor';
 import '../../assets/update.css';
 
 function WithBaseCard(Component) {
@@ -47,9 +48,11 @@ function WithBaseCard(Component) {
 
 const GoodAlbum = WithBaseCard(GoodsAlbum);
 const GoodAttr = WithBaseCard(GoodsAttribute);
+const GoodDetailEditor = WithBaseCard(GoodsEditor);
 
 
 export {
   GoodAlbum,
-  GoodAttr
+  GoodAttr,
+  GoodDetailEditor
 };
