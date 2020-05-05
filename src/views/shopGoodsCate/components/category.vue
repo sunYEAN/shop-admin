@@ -4,23 +4,55 @@
       <h3>参数分类</h3>
       <i class="icon close" @click="handleClose"></i>
     </div>
+
     <el-form class="form_main" ref="cate" :model="form">
-      <el-form-item prop="name"
-                    required
-                    label="分类名称"
-                    label-width="80px">
-        <el-input ref="input"
-                  size="small"
-                  v-model="form.name"
-                  clearable
-                  placeholder="请输入名称"></el-input>
+
+      <el-form-item prop="sort_order" required label="父级分类名称：" label-width="120px">
+        <el-select :value="form.parent_id" @change="handleParentChange">
+          <el-option label="顶级分类" :value="0"></el-option>
+          <el-option v-for="i in filterSelf" :key="i.id + 'edit'" :label="i.name" :value="i.id"></el-option>
+        </el-select>
       </el-form-item>
 
-      <el-form-item prop="enabled"
-                    label="是否开启"
-                    label-width="80px">
-        <el-switch size="small"
-                   v-model="form.enabled"></el-switch>
+      <el-form-item prop="name" required label="分类名称：" label-width="100px">
+        <el-input ref="input" size="small" v-model="form.name" placeholder="请输入名称"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="name" label="前端名称：" label-width="100px">
+        <el-input ref="input" size="small" v-model="form.front_name" placeholder="请输入front_name"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="name" label="前端描述：" label-width="100px">
+        <el-input type="textarea" ref="input" size="small" v-model="form.front_desc" placeholder="请输入front_desc"></el-input>
+      </el-form-item>
+
+      <!--   upload   -->
+      <el-form-item prop="img_url" label="img_url：" label-width="100px">
+        <image-upload :url.sync="form.img_url"></image-upload>
+      </el-form-item>
+
+      <el-form-item prop="icon_url" label="icon_url：" label-width="100px">
+        <image-upload :url.sync="form.icon_url"></image-upload>
+      </el-form-item>
+
+      <el-form-item prop="wap_banner_url" label="wap_url：" label-width="100px">
+        <image-upload :url.sync="form.wap_banner_url"></image-upload>
+      </el-form-item>
+
+      <el-form-item prop="banner_url" label="banner：" label-width="100px">
+        <image-upload :url.sync="form.banner_url"></image-upload>
+      </el-form-item>
+
+      <el-form-item prop="name" label="关键词：" label-width="100px">
+        <el-input ref="input" size="small" v-model="form.keywords" clearable placeholder="请输入关键词"></el-input>
+      </el-form-item>
+
+      <el-form-item class="number" prop="sort_order" label="分类排序：" label-width="100px">
+        <el-input-number :min="0" size="small" v-model="form.sort_order"></el-input-number>
+      </el-form-item>
+
+      <el-form-item prop="enabled" label="是否开启：" label-width="100px">
+        <el-switch size="small" v-model="form.enabled"></el-switch>
       </el-form-item>
 
       <el-form-item>
@@ -35,25 +67,42 @@
 
 <script>
     import {mapActions} from 'vuex';
+    import {getToken} from '../../../utils/auth';
+    import ImageUpload from '../../../components/UploadImage';
+
 
     export default {
         name: "AttributeCategory",
+        components: {ImageUpload},
         props: {
             data: {
                 type: Object,
                 default: () => ({})
+            },
+            categories: {
+                type: Array,
+                default: () => []
             }
         },
         watch: {
             data: {
                 handler(nVal) {
                     if (nVal.id) {
-                        const {id, name, cate_enabled} = nVal;
-                        this.form = {id, name, enabled: cate_enabled};
+                        this.form = Object.assign({}, nVal);
                     } else {
                         this.form = {
+                            type: 0,
                             name: '',
-                            enabled: true
+                            front_name: '',
+                            front_desc: '',
+                            keywords: '',
+                            enabled: true,
+                            parent_id: 0,
+                            sort_order: 0,
+                            img_url: '',
+                            icon_url: '',
+                            banner_url: '',
+                            wap_banner_url: '',
                         }
                     }
                 },
@@ -62,9 +111,22 @@
         },
         data() {
             return {
+                uploadHeader: {
+                    'x-token': getToken()
+                },
                 form: {
+                    type: 0,
                     name: '',
+                    front_name: '',
+                    front_desc: '',
+                    keywords: '',
                     enabled: true,
+                    parent_id: 0,
+                    sort_order: 0,
+                    img_url: '',
+                    icon_url: '',
+                    banner_url: '',
+                    wap_banner_url: '',
                 }
             }
         },
@@ -72,6 +134,12 @@
         computed: {
             title() {
                 return this.data.id ? '修改' : '新增';
+            },
+            is_edit () {
+                return !!this.data.id;
+            },
+            filterSelf () {
+                return this.categories.filter(item => item.id !== this.form.id) || [];
             }
         },
 
@@ -82,22 +150,21 @@
             submit() {
                 this.$refs.cate.validate(async valid => {
                     if (valid) {
-                        const {id, name, enabled} = this.form;
-
-                        // 值没变
-                        if (name === this.data.name && enabled === this.data.cate_enabled) return;
                         this.$emit('submit', {
-                            id,
-                            text: this.title,
-                            model: 'category',
-                            name: name,
-                            enabled: enabled ? 1 : 0
+                            ...this.form,
+                            enabled: this.form.enabled ? 1 : 0
                         })
                     }
                 })
             },
+            handleUploaded (a, b, c) {
+                console.log(a, b, c);
+            },
             handleClose() {
                 this.$emit('update:visible', false);
+            },
+            handleParentChange(parent_id) {
+                this.form.parent_id = parent_id;
             }
         }
     }
@@ -106,6 +173,23 @@
 <style scoped>
   >>> .el-form-item {
     margin-top: 14px;
+  }
+  >>>.el-upload{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  >>>.el-input__inner,>>>.el-textarea__inner{
+    border: none;
+    border-bottom: 1px dashed #e0e0e0;
+  }
+  >>>.el-input__inner:focus,>>>.el-textarea__inner:focus{
+    border-color: #409EFF;
+  }
+  .number >>> .el-input__inner {
+    border: 1px solid #e0e0e0;
   }
 </style>
 <style scoped lang="less">
@@ -143,5 +227,18 @@
 
   .action {
     text-align: right;
+  }
+
+  .upload{
+    width: 100px;
+    height: 100px;
+    border: 1px dashed #e0e0e0;
+    border-radius: 4px;
+    img{
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
   }
 </style>

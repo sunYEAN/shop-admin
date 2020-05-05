@@ -7,7 +7,7 @@
         <li class="category_title">
           <i class="el-icon-check success bold"></i>开启
           <i class="el-icon-close light bold"></i>关闭
-          (参数类别)
+          (参数类别，权重越小越靠前)
         </li>
         <li class="category_item"
             @click="current = index"
@@ -16,27 +16,29 @@
           <span>
             <i v-if="i.enabled" class="el-icon-check success bold"></i>
             <i v-else class="el-icon-close light bold"></i>
-            {{i.name}}</span>
+            {{i.name}}
+            <i style="color: #999;font-style: normal;">（权重：{{i.sort_order}}）</i>
+          </span>
           <span class="icons">
             <i class="icon el-icon-edit"
                title="编辑"
-               @click.stop="setToast('category', i)"></i>
+               @click.stop="setToast(i)"></i>
             <i class="icon el-icon-delete light"
                title="删除"
-               @click.stop="handleRemove('category', i)"></i>
+               @click.stop="removeOne(i)"></i>
           </span>
         </li>
       </ul>
 
       <span class="add">
-        <i class="icon el-icon-plus" @click="setToast('category', {})"></i>
+        <i class="icon el-icon-plus" @click="setToast()"></i>
       </span>
 
     </div>
 
     <!--    <div class="collapse_line"></div>-->
     <div class="container category_sub_wrap">
-      <el-button class="attr_add" @click="setToast('attribute', {})" type="primary" size="small">新增</el-button>
+      <el-button class="attr_add" @click="setToast()" type="primary" size="small">新增</el-button>
       <div class="attr_table">
         <el-table class="table"
                   height="300"
@@ -73,10 +75,10 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" label="操作" width="100px">
+          <el-table-column align="center" label="操作" width="200px">
             <template slot-scope="{row}">
-              <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
-              <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
+              <a class="action edit" title="编辑" @click="setToast(row)">编辑</a>
+              <a class="action delete" title="删除" @click="removeOne(row)">删除</a>
             </template>
           </el-table-column>
         </el-table>
@@ -86,6 +88,7 @@
     <!--  编辑分类  -->
     <v-category :visible.sync="form.show"
                 :data="form.data"
+                :categories="computedSup"
                 @submit="handleSubmit"></v-category>
   </div>
 </template>
@@ -150,8 +153,8 @@
             /**
              * method 设置编辑弹窗的值
              */
-            setToast (model, data) {
-                this['form_' + model] = {
+            setToast (data) {
+                this.form = {
                     show: true,
                     data: (data || {})
                 }
@@ -160,24 +163,16 @@
             /**
              * method 关闭编辑分类弹窗
              */
-            clearToast (model) {
-                this['form_' + model] = {
+            clearToast () {
+                this.form = {
                     show: false,
                     data: {}
                 }
             },
 
-            handleRemove (model, i) {
-                this.removeOne({
-                    ...i,
-                    model
-                })
-            },
-
             removeOne (payload) {
                 const h = this.$createElement;
-                const {model, name, id} = payload;
-                console.log(id, model)
+                const {name, id} = payload;
                 this.$msgbox({
                     title: '温馨提示',
                     message: h('p', null, [
@@ -189,16 +184,15 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                 }).then(() => {
-                    this.handleAttributeApi({
-                        method: 'remove',
-                        payload: {id, model}
+                    this.handleApiMethods({
+                        method: 'deleteGoodCategory',
+                        payload: {id}
                     }).then(() => {
                         this.$notify({
                             type: "success",
                             message: '删除成功',
                         });
-                        if (model === 'category') this.getGoodsCatalogs({reset: true});
-                        else this.getAttributes({id: this.currentSupId})
+                        this.getGoodsCatalogs({reset: true});
                     })
                 }).catch(err => {
                     console.log(err);
@@ -211,32 +205,25 @@
              * @param form
              */
             handleSubmit (form) {
-                let payload = Object.assign({}, form),
-                    {text, model} = payload;
-
-                delete payload.text;
-
-                this.handleAttributeApi({
-                    method: 'edit',
+                let payload = Object.assign({}, form);
+                this.handleApiMethods({
+                    method: 'storeGoodCategory',
                     payload
-                }).then(() => {
+                }).then((res) => {
                     this.$notify({
                         type: "success",
-                        message: text + '成功',
+                        message: (payload.id ? '编辑' : '新增') + '成功',
                     });
 
-                    this.clearToast(model);
-                    if (model === 'category') this.getGoodsCatalogs({reset: true});
-                    else this.getAttributes({id: this.currentSupId});
+                    this.clearToast();
+                    this.getGoodsCatalogs({reset: true});
                 })
             },
 
             handleChangeAttrEnabled (row) {
                 this.handleSubmit({
-                    id: row.id,
-                    text: '修改',
-                    model: 'attribute',
-                    enabled: row.attr_enabled ? 1 : 0
+                    ...row,
+                    enabled: row.enabled ? 1 : 0
                 });
             },
         },
@@ -431,6 +418,9 @@
   .wap_img{
     width: 100px;
     height: 100px;
+  }
+  .action{
+    margin: 0 6px;
   }
 </style>
 

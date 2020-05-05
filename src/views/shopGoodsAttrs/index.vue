@@ -7,7 +7,7 @@
         <li class="category_title">
           <i class="el-icon-check success bold"></i>开启
           <i class="el-icon-close light bold"></i>关闭
-          (参数类别)
+          (参数类别，权重越小越靠前)
         </li>
         <li class="category_item"
             @click="current_category = index"
@@ -16,7 +16,8 @@
           <span>
             <i v-if="i.cate_enabled" class="el-icon-check success bold"></i>
             <i v-else class="el-icon-close light bold"></i>
-            {{i.name}}</span>
+            {{i.name}}
+          </span>
           <span class="icons">
             <i class="icon el-icon-edit"
                title="编辑"
@@ -321,7 +322,7 @@
       }
 
       &.category_wrap {
-        width: 240px;
+        width: 300px;
         padding: 0;
         position: relative;
 
@@ -353,7 +354,7 @@
             .icons{
               display: none;
               .icon{
-                font-size: 16px;
+                font-size: 20px;
                 margin-right: 10px;
                 &:hover{
                   color: #409EFF;

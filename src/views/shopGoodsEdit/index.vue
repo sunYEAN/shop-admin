@@ -25,22 +25,7 @@
       </el-form-item>
 
       <el-form-item label="商品缩略图" prop="list_pic_url">
-        <el-upload
-          class="avatar-uploader"
-          name="image"
-          action="/admin/admin/upload/image"
-          list-type="picture-card"
-          :headers="uploadHeader"
-          :show-file-list="false"
-          :on-success="handleSuccess">
-          <div @click.stop v-if="step0.list_pic_url" class="wrap">
-            <img :src="step0.list_pic_url" class="avatar" alt=""/>
-            <i class="zoom el-icon-zoom-in" @click.stop="handlePreviewImg({url: step0.list_pic_url})"></i>
-            <i class="delete el-icon-delete" @click.stop="removeMiniAvatar"></i>
-            <span class="check"><i class="el-icon-check"></i></span>
-          </div>
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
+        <image-upload :url.sync="step0.list_pic_url"/>
       </el-form-item>
 
       <el-form-item label="设置新品标志" prop="is_new">
@@ -52,31 +37,6 @@
         <el-radio v-model="step0.is_hot" :label="1">是</el-radio>
       </el-form-item>
     </el-form>
-
-
-<!--    <el-form v-show="step === 1"
-             ref="step1"
-             class="form"
-             label-width="140px"
-             :model="step1"
-             :rules="rule1">
-      <el-form-item label="商品相册"   prop="gallery">
-        <el-upload
-          name="image"
-          action="/admin/admin/upload/image"
-          list-type="picture-card"
-          :headers="uploadHeader"
-          :on-success="(res, file) => handleSuccess('b', res, file)"
-          :on-preview="handlePreviewImg"
-          :on-remove="handleRemove">
-          <i class="el-icon-plus"></i>
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="提示">
-        <i>（图片越小，加载越快）</i>
-      </el-form-item>
-    </el-form>-->
-
 
     <el-form v-show="step === 1"
              ref="step1"
@@ -129,7 +89,7 @@
     import {getToken} from '../../utils/auth';
     import {mapActions, mapGetters} from 'vuex';
     import TinyEditor from '../../components/TinyEditor';
-    import PreviewImage from "../../components/PreviewImage";
+    import ImageUpload from '../../components/UploadImage';
     export default {
         name: "GoodEdit",
         props: {
@@ -139,7 +99,7 @@
             }
         },
         components: {
-            PreviewImage,
+            ImageUpload,
             TinyEditor
         },
         data() {
@@ -306,13 +266,6 @@
             },
 
             /**
-             * method 删除已上传的图片
-             */
-            removeMiniAvatar() {
-                this.step0.list_pic_url = '';
-            },
-
-            /**
              * event handler 上传图片完毕
              */
             handleSuccess(res, file) {
@@ -335,13 +288,6 @@
                     this.$message.error('上传头像图片大小不能超过 50kb');
                 }
                 return isJPG && isLt2M;
-            },
-
-            /**
-             * event handler 查看图片
-             */
-            handlePreviewImg(file) {
-              this.$store.dispatch('app/previewImage', file.url);
             },
 
         },
