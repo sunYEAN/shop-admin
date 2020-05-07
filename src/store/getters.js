@@ -1,8 +1,8 @@
 const getters = {
   sidebar: state => state.app.sidebar,
   device: state => state.app.device,
-  token: state => state.user.token,
-  avatar: state => state.user.userInfo.avatar,
-  userInfo: state => state.user.userInfo
+  token: state => state.admin.token,
+  avatar: state => state.admin.userInfo.avatar,
+  userInfo: state => state.admin.userInfo
 };
 export default getters

@@ -1,92 +1,83 @@
-import { login, logout, getUserInfo } from '../../api/user'
-import { getToken, setToken, removeToken } from '../../utils/auth'
-import { resetRouter } from '@/router'
+import * as usersApi from '../../api/user';
+import {parseTime} from '../../utils'
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    userInfo: {},
-  }
-};
-
-const state = getDefaultState();
-
-const mutations = {
-  RESET_STATE: (state) => {
-    Object.assign(state, getDefaultState());
-  },
-  SET_TOKEN: (state, token) => {
-    state.token = token;
-  },
-  SET_USER_INFO: (state, info) => {
-    state.userInfo = info;
+const state = {
+  users: [],
+  usersOptions: {
+    page: 1,
+    size: 15,
+    name: '',
+    loading: false,
+    totalCount: 0,
+    totalPages: 1
   },
 };
+
 
 const actions = {
-  // user login
-  login({ commit }, userInfo) {
-    return new Promise((resolve, reject) => {
-      login(userInfo).then(response => {
-        const { data } = response;
-        commit('SET_TOKEN', data.token);
-        setToken(data.token);
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+
+  /**
+   * 设置查询条件
+   * @param commit
+   * @param options
+   */
+  setUsersOptions({commit}, options) {
+    commit('SET_PAGE_OPTIONS', options);
+  },
+
+
+  /**
+   * 获取用户列表
+   * @param commit
+   * @param state
+   * @returns {Q.Promise<any>}
+   */
+  getUsers({commit, state}) {
+    const {page, size, name, loading} = state.usersOptions;
+    commit('SET_PAGE_OPTIONS', {loading: true});
+
+    if (loading) return;
+
+    return usersApi.getUsers({page, size, name}).then(res => {
+      const {data} = res;
+      data.data.forEach(item => {
+        item.register_time = parseTime(item.register_time, '{y}-{m}-{d}');
+        item.last_login_time = parseTime(item.last_login_time, '{y}-{m}-{d}');
+      });
+      commit('SET_USERS_LIST', res.data);
+    }).finally(() => {
+      commit('SET_PAGE_OPTIONS', {loading: false});
     })
   },
 
-  // get user info
-  getUserInfo({ commit, state }, params = {}) {
-    return new Promise((resolve, reject) => {
 
-      // 用户不存在或者重置
-      if (!state.userInfo.id || params.reset) {
-        return getUserInfo(state.token).then(response => {
-          const { data } = response;
-          if (!data) {
-            reject('验证失败，请重新登录。')
-          }
-          commit('SET_USER_INFO', data);
-          resolve(data)
-        }).catch(error => {
-          reject(error)
-        })
-      }
-      return state.userInfo || {};
-    })
+  /**
+   * 单纯的接口
+   * @param commie
+   * @param method
+   * @param payload
+   * @returns {*}
+   */
+  handleApiMethods ({commie}, {method, payload}) {
+    return usersApi[method](payload);
   },
+};
 
-  // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+const mutations = {
+  ['SET_PAGE_OPTIONS'](state, options) {
+    state.usersOptions = Object.assign(state.usersOptions, options);
   },
-
-  // remove token
-  resetToken({ commit }) {
-    return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
-    })
+  ['SET_USERS_LIST'](state, res) {
+    const {data, count, totalPages} = res;
+    state.users = data;
+    state.usersOptions.totalCount = count;
+    state.usersOptions.totalPages = totalPages;
   }
-}
+};
+
 
 export default {
-  namespaced: true,
   state,
+  actions,
   mutations,
-  actions
 }
-

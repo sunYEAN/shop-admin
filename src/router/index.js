@@ -32,18 +32,6 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-
-  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -51,66 +39,72 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '主面板', icon: 'dashboard' }
+      meta: {title: '主页', icon: 'dashboard'}
     }]
   },
 
   {
     path: '/shop',
     component: Layout,
-    redirect: '/shop/cate',
+    redirect: '/shop/user',
     name: 'Shop',
-    meta: { title: '商城管理', icon: 'example' },
+    meta: {title: '商城管理', icon: 'shop'},
     children: [
       {
-        path: 'goods-attrs',
-        name: 'GoodsAttrs',
-        component: () => import('@/views/shopGoodsAttrs/index'),
-        meta: { title: '商品参数管理', icon: 'table' }
+        path: 'user',
+        name: 'UserTable',
+        component: () => import('@/views/shopGoodsUser/index'),
+        meta: {title: '用户列表', icon: 'user'}
       },
       {
         path: 'goods-cate',
         name: 'GoodsCate',
         component: () => import('@/views/shopGoodsCate/index'),
-        meta: { title: '商品类别管理', icon: 'table' }
+        meta: {title: '类别管理', icon: 'cate'}
+      },
+      {
+        path: 'goods-attrs',
+        name: 'GoodsAttrs',
+        component: () => import('@/views/shopGoodsAttrs/index'),
+        meta: {title: '参数管理', icon: 'table'}
       },
       {
         path: 'goods-manage',
         name: 'GoodsManage',
         component: () => import('@/views/shopGoodsManage/index'),
-        meta: { title: '商品管理', icon: 'tree' }
+        meta: {title: '商品管理', icon: 'goods'}
       },
       {
         path: 'edit',
         name: 'GoodsEdit',
         hidden: true,
         component: () => import('@/views/shopGoodsEdit/index'),
-        meta: { title: '编辑商品', icon: 'tree' }
+        meta: {title: '编辑商品', icon: 'tree'}
       },
       {
         path: 'update',
         name: 'GoodsUpdate',
         hidden: true,
         component: () => import('@/views/shopGoodsUpdate/index'),
-        meta: { title: '修改商品', icon: 'tree' }
+        meta: {title: '修改商品', icon: 'tree'}
       },
       {
         path: 'order',
         name: 'Order',
         component: () => import('@/views/shopOrder/index'),
-        meta: { title: '订单管理', icon: 'table' }
+        meta: {title: '订单管理', icon: 'order'}
       },
       {
         path: 'collection',
         name: 'Collection',
         component: () => import('@/views/shopCollection/index'),
-        meta: { title: '收藏列表', icon: 'table' }
+        meta: {title: '收藏列表', icon: 'collect'}
       },
       {
         path: 'cart',
         name: 'Cart',
         component: () => import('@/views/shopCart/index'),
-        meta: { title: '购物车', icon: 'tree' }
+        meta: {title: '购物车', icon: 'cart'}
       }
     ]
   },
@@ -120,34 +114,57 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/system/user-table',
     name: 'System',
-    meta: { title: '系统管理', icon: 'example' },
+    meta: {title: '系统管理', icon: 'system'},
     children: [
-      {
-        path: 'user-table',
-        name: 'UserTable',
-        component: () => import('@/views/sysUserTable/index'),
-        meta: { title: '用户管理', icon: 'table' }
-      },
       {
         path: 'user-auth',
         name: 'UserAuth',
         component: () => import('@/views/sysUserAuth/index'),
-        meta: { title: '角色管理', icon: 'tree' }
+        meta: {title: '角色管理', icon: 'admin'}
       },
       {
         path: 'menu',
         name: 'Menu',
         component: () => import('@/views/sysMenu/index'),
-        meta: { title: '菜单管理', icon: 'table' }
+        meta: {title: '菜单管理', icon: 'table'}
       },
       {
         path: 'logistics',
         name: 'Logistics',
         component: () => import('@/views/sysLogistics/index'),
-        meta: { title: '物流管理', icon: 'table' }
+        meta: {title: '物流管理', icon: 'logistics'}
       }
     ]
   },
+
+  {
+    path: '/program',
+    component: Layout,
+    redirect: '/program/setting',
+    name: 'Program',
+    meta: {title: '小程序', icon: 'program'},
+    children: [
+      {
+        path: 'setting',
+        name: 'MiniSetting',
+        component: () => import('@/views/miniProgram/setting/index'),
+        meta: {title: '配置中心', icon: 'setting'}
+      },
+      {
+        path: 'navbar',
+        name: 'MiniNavBar',
+        component: () => import('@/views/miniProgram/navbar/index'),
+        meta: {title: '导航设置', icon: 'nav'}
+      },
+      {
+        path: 'design',
+        name: 'MiniDesign',
+        component: () => import('@/views/miniProgram/design/index'),
+        meta: {title: '页面设计', icon: 'design'}
+      },
+    ]
+  },
+
 
   // {
   //   path: '/nested',
@@ -213,26 +230,36 @@ export const constantRoutes = [
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: '商城装扮', icon: 'link' }
+        meta: {title: '商城装扮', icon: 'link'}
       }
     ]
   },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-]
+  {path: '*', redirect: '/404', hidden: true}
+];
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({y: 0}),
   routes: constantRoutes
-})
+});
 
-const router = createRouter()
+const router = createRouter();
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter = createRouter()
+  const newRouter = createRouter();
   router.matcher = newRouter.matcher // reset router
 }
 

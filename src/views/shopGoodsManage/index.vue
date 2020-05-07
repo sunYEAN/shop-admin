@@ -5,7 +5,7 @@
       <el-button type="primary" size="small" @click="navigateTo('edit')">新增</el-button>
     </search-bar>
 
-    <el-table :data="goods" border v-loading="options.loading">
+    <el-table class="table" :data="goods" border v-loading="options.loading">
 
       <el-table-column align="center" label="ID" prop="id"/>
 
@@ -308,11 +308,17 @@
         }
       }
     }
+  }
 
-    .app-container {
-      .pagination {
-        margin-top: 16px;
-      }
+  .app-container {
+    position: relative;
+    padding-bottom: 60px;
+    .pagination {
+      left: 20px;
+      width: calc(100% - 40px);
+      bottom: 15px;
+      position: absolute;
+      text-align: right;
     }
   }
 

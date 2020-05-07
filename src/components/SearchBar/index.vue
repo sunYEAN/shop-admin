@@ -23,7 +23,8 @@
           <el-option label="全部" :value="0"/>
           <el-option label="已上架" :value="1"/>
           <el-option label="已下架" :value="2"/>
-        </el-select>      </el-form-item>
+        </el-select>
+      </el-form-item>
 
       <el-button size="small" type="primary" @click="handleSearchSubmit">搜索</el-button>
     </el-form>
