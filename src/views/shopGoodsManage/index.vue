@@ -55,9 +55,9 @@
       <el-table-column align="center" label="上架">
         <template slot-scope="{row}">
           <el-switch
-            :value="row.on_sale"
+            v-model="row.on_sale"
             style="display: block;"
-            @change="(status) => {handleStatusChange(row, status)}"
+            @change="updateGood(row)"
             active-color="#13ce66"
             inactive-color="#d0d0d0">
           </el-switch>
@@ -84,107 +84,126 @@
 </template>
 
 <script>
-  import {mapActions, mapState} from 'vuex';
-  import SearchBar from '../../components/SearchBar';
+    import {mapActions, mapState} from 'vuex';
+    import SearchBar from '../../components/SearchBar';
 
-  export default {
-    data() {
-      return {
-      }
-    },
-    components: {
-      SearchBar,
+    export default {
+        data() {
+            return {}
+        },
+        components: {
+            SearchBar,
 
-    },
-    computed: {
-      ...mapState('goods', {
-        goods: state => state.goods,
-        catalogs: state => state.catalogs,
-        options: state => state.goodsOptions,
-      }),
-      filterLevelCatalogs() {
-        return this.catalogs.filter(item => item.level == 2);
-      }
-    },
-    methods: {
-      ...mapActions('goods', [
-        'getGoods',
-        'handleApiMethods',
-        'setGoodsOptions',
-        'getGoodsCatalogs'
-      ]),
-
-      handleStatusChange(item, status) {
-        item.on_sale = status;
-      },
-
-      handlePageChange(page) {
-        this.setGoodsOptions({page});
-        this.getGoods();
-      },
-
-      /**
-       * event handler 搜索条件改变
-       */
-      handleSearchChange(form) {
-        this.setGoodsOptions({
-          page: 1,
-          name: form.name,
-          cate: form.cate,
-          onSale: form.onSale
-        });
-        this.getGoods();
-      },
-
-      /**
-       * event handler 新增商品
-       */
-      navigateTo(path, params) {
-        this.$router.push({path, params});
-      },
-
-      /**
-       * event handler 删除一个商品
-       * @param good
-       */
-      handleDeleteGood(good) {
-        const h = this.$createElement;
-        this.$msgbox({
-          title: '提示',
-          message: h('p', null, [
-            h('span', null, '此操作将删除商品'),
-            h('span', {style: 'color: #ca2230'}, `${good.name}`)
-          ]),
-          showCancelButton: true,
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-        }).then(() => {
-          return this.handleApiMethods({
-            method: 'deleteGood',
-            payload: {
-              id: good.id
+        },
+        computed: {
+            ...mapState('goods', {
+                goods: state => state.goods,
+                catalogs: state => state.catalogs,
+                options: state => state.goodsOptions,
+            }),
+            filterLevelCatalogs() {
+                return this.catalogs.filter(item => item.level === 2);
             }
-          })
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-          return this.getGoods();
-        }).catch(err => {
-          this.$message({
-            type: 'success',
-            message: '取消成功'
-          });
-        });
-      },
+        },
+        methods: {
+            ...mapActions('goods', [
+                'getGoods',
+                'handleApiMethods',
+                'setGoodsOptions',
+                'getGoodsCatalogs'
+            ]),
 
-    },
-    mounted() {
-      this.getGoods();
-      this.getGoodsCatalogs();
+            handleStatusChange(item, status) {
+                item.on_sale = status;
+            },
+
+            handlePageChange(page) {
+                this.setGoodsOptions({page});
+                this.getGoods();
+            },
+
+            /**
+             * event handler 搜索条件改变
+             */
+            handleSearchChange(form) {
+                this.setGoodsOptions({
+                    page: 1,
+                    name: form.name,
+                    cate: form.cate,
+                    onSale: form.onSale
+                });
+                this.getGoods();
+            },
+
+            /**
+             * event handler 新增商品
+             */
+            navigateTo(path, params) {
+                this.$router.push({path, params});
+            },
+
+            /**
+             * event handler 删除一个商品
+             * @param good
+             */
+            handleDeleteGood(good) {
+                const h = this.$createElement;
+                this.$msgbox({
+                    title: '提示',
+                    message: h('p', null, [
+                        h('span', null, '此操作将删除商品'),
+                        h('span', {style: 'color: #ca2230'}, `${good.name}`)
+                    ]),
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    return this.handleApiMethods({
+                        method: 'deleteGood',
+                        payload: {
+                            id: good.id
+                        }
+                    })
+                }).then(() => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                    return this.getGoods();
+                }).catch(err => {
+                    this.$message({
+                        type: 'success',
+                        message: '取消成功'
+                    });
+                });
+            },
+
+            updateGood(row) {
+                this.handleApiMethods({
+                    method: 'addGood',
+                    payload: {
+                        id: row.id,
+                        is_on_sale: row.on_sale ? 1 : 0
+                    }
+                }).then(res => {
+                    this.$notify({
+                        type: 'success',
+                        message: '修改成功'
+                    });
+                    this.getGoods({reset: true});
+                }).catch(err => {
+                    this.$message({
+                        type: 'danger',
+                        message: err.message
+                    })
+                })
+            },
+        },
+        mounted() {
+            this.getGoods();
+            this.getGoodsCatalogs();
+        }
     }
-  }
 </script>
 
 <style scoped>
