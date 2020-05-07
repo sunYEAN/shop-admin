@@ -1,6 +1,7 @@
 import * as attributesApi from '../../api/attributes';
 
 const state = {
+  currentCategory: {},
   attributes: [],
   attributesOptions: {
     page: 1,
@@ -67,6 +68,11 @@ const actions = {
   }) {
     if (!method) return;
     return attributesApi[method](payload);
+  },
+
+
+  setCurrentCategory({commit}, category){
+    commit('SET_CURRENT_CATEGORY', category);
   }
 };
 
@@ -86,6 +92,10 @@ const mutations = {
   },
   ['SET_ATTRIBUTE_CATEGORY'](state, category) {
     state.attributeCategory = category;
+  },
+
+  ['SET_CURRENT_CATEGORY'] (state, category) {
+    state.currentCategory = category;
   }
 };
 

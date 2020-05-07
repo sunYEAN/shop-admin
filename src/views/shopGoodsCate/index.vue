@@ -36,7 +36,14 @@
     </div>
 
     <div class="category_sub">
-      <el-button class="sub_add" @click="setToast()" type="primary" size="small">新增</el-button>
+      <div class="header">
+        <div class="word">
+          <p>当前分类：</p>
+          <img :src="currentSup.icon_url" alt="">
+          <span>{{currentSup.name}}</span>
+        </div>
+        <el-button class="sub_add" @click="setToast()" type="primary" size="small">新增</el-button>
+      </div>
       <el-table class="sub_table" stripe
                 :data="currentSubs" border>
         <el-table-column align="center" prop="id" width="100px" label="id"></el-table-column>
@@ -377,11 +384,35 @@
 
     .category_sub {
       flex: 1;
-      padding: 6px;
+      border: 1px solid #EBEEF5;
       overflow: auto;
+      margin-left: 6px;
+      background-color: #ffffff;
+      .header{
+        display: flex;
+        padding: 0 10px;
+        align-items: center;
+        justify-content: space-between;
+        .word{
+          color: #999;
+          display: flex;
+          align-items: center;
+          >img{
+            width: 16px;
+            height: 16px;
+            display: block;
+            margin-right: 10px;
+          }
+        }
+      }
       .sub_add{
-        float: right;
+        margin-top: 16px;
+        margin-right: 35px;
         margin-bottom: 16px;
+      }
+      .sub_table{
+        border: none;
+        border-top: 1px solid #EBEEF5;
       }
     }
   }
