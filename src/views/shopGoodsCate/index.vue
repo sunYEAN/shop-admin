@@ -9,9 +9,9 @@
           (参数类别，权重越小越靠前)
         </li>
         <li class="category_item"
-            @click="current = index"
-            :class="{active: current === index}"
-            v-for="(i, index) in computedSup" :key="i.id">
+            @click="setCurrentCatalog(i)"
+            :class="{active: current.id === i.id}"
+            v-for="i in computedSup" :key="i.id">
           <span>
             <i v-if="i.enabled" class="el-icon-check success bold"></i>
             <i v-else class="el-icon-close light bold"></i>
@@ -39,8 +39,8 @@
       <div class="header">
         <div class="word">
           <p>当前分类：</p>
-          <img :src="currentSup.icon_url" alt="">
-          <span>{{currentSup.name}}</span>
+          <img :src="current.icon_url" alt="">
+          <span>{{current.name}}</span>
         </div>
         <el-button class="sub_add" @click="setToast()" type="primary" size="small">新增</el-button>
       </div>
@@ -58,7 +58,7 @@
 
         <el-table-column align="center" prop="parent_id" width="150px" label="父类(parent_id)">
           <template slot-scope="{row}">
-            {{currentSup.name}}-{{row.parent_id}}
+            {{current.name}}-{{row.parent_id}}
           </template>
         </el-table-column>
 
@@ -104,7 +104,6 @@
   export default {
     data() {
       return {
-        current: 0,
         rule: {
           name: [
             {
@@ -128,6 +127,7 @@
     },
     computed: {
       ...mapState('goods', {
+        current: state => state.currentCatalog,
         catalogs: state => state.catalogs,
       }),
       computedSup() {
@@ -138,18 +138,20 @@
         return this.catalogs.filter(cate => cate.level === 2) || [];
       },
 
-      currentSup() {
-        return this.computedSup[this.current] || {};
-      },
-
       currentSubs() {
-        return this.computedSub.filter(c => c.parent_id === this.currentSup.id) || [];
+        return this.computedSub.filter(c => c.parent_id === this.current.id) || [];
       },
+    },
+    watch: {
+      catalogs (nVal) {
+        this.setCurrentCatalog(nVal[0] || {});
+      }
     },
     methods: {
       ...mapActions('goods', [
         'getGoodsCatalogs',
         'handleApiMethods',
+        'setCurrentCatalog'
       ]),
 
       /**

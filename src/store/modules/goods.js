@@ -12,6 +12,8 @@ const state = {
     totalCount: 0,
     totalPages: 1,
   },
+
+  currentCatalog: {}, // 分类管理页，当前选中的分类
   catalogs: [],
 };
 
@@ -81,6 +83,11 @@ const actions = {
   handleApiMethods ({commie}, {method, payload}) {
     return goodsApi[method](payload);
   },
+
+
+  setCurrentCatalog ({commit}, catalog) {
+    commit('SET_CURRENT_CATALOG', catalog);
+  }
 };
 
 const mutations = {
@@ -95,6 +102,9 @@ const mutations = {
     state.goods = data;
     state.goodsOptions.totalCount = count;
     state.goodsOptions.totalPages = totalPages;
+  },
+  ['SET_CURRENT_CATALOG'] (state, catalog) {
+    state.currentCatalog = catalog;
   }
 };
 
