@@ -48,8 +48,7 @@
             data: {
                 handler(nVal) {
                     if (nVal.id) {
-                        const {id, name, cate_enabled} = nVal;
-                        this.form = {id, name, enabled: cate_enabled};
+                        this.form = {...nVal};
                     } else {
                         this.form = {
                             name: '',
@@ -84,13 +83,11 @@
                     if (valid) {
                         const {id, name, enabled} = this.form;
 
-                        // 值没变
-                        if (name === this.data.name && enabled === this.data.cate_enabled) return;
                         this.$emit('submit', {
                             id,
                             text: this.title,
                             model: 'category',
-                            name: name,
+                            name,
                             enabled: enabled ? 1 : 0
                         })
                     }

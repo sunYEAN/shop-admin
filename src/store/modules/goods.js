@@ -43,7 +43,7 @@ const actions = {
     if (!state.catalogs.length || params.reset) {
       return goodsApi.getGoodsCatalogs().then(res => {
         res.data.forEach(i => {
-          i.enabled = !!i.enabled
+          i.is_show = !!i.is_show
         });
         commit('SET_CATALOGS', res.data);
       })

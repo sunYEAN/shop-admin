@@ -14,6 +14,9 @@ export default {
 </script>
 
 <style>
+  html{
+    color: #353535;
+  }
   .lines {
     display: -webkit-box;
     overflow: hidden;

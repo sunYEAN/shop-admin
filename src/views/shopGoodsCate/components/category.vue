@@ -54,7 +54,7 @@
       </el-form-item>
 
       <el-form-item prop="enabled" label="是否开启：" label-width="100px">
-        <el-switch size="small" v-model="form.enabled"></el-switch>
+        <el-switch size="small" v-model="form.is_show"></el-switch>
       </el-form-item>
 
       <el-form-item>
@@ -98,8 +98,8 @@
                             front_name: '',
                             front_desc: '',
                             keywords: '',
-                            enabled: true,
-                            parent_id: 0,
+                            is_show: true,
+                            parent_id: nVal.parent_id || 0,
                             sort_order: 0,
                             img_url: '',
                             icon_url: '',
@@ -122,7 +122,7 @@
                     front_name: '',
                     front_desc: '',
                     keywords: '',
-                    enabled: true,
+                    is_show: true,
                     parent_id: 0,
                     sort_order: 0,
                     img_url: '',
@@ -154,7 +154,6 @@
                     if (valid) {
                         this.$emit('submit', {
                             ...this.form,
-                            enabled: this.form.enabled ? 1 : 0
                         })
                     }
                 })

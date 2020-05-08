@@ -14,7 +14,7 @@
             :class="{active: category.id === i.id}"
             v-for="i in categories" :key="i.id">
           <span>
-            <i v-if="i.cate_enabled" class="el-icon-check success bold"></i>
+            <i v-if="i.enabled" class="el-icon-check success bold"></i>
             <i v-else class="el-icon-close light bold"></i>
             {{i.name}}
           </span>
@@ -50,13 +50,8 @@
                 border
                 v-loading="options.loading">
         <el-table-column align="center" prop="id" width="100px" label="ID"></el-table-column>
-        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
-        <el-table-column align="center" width="200px" label="开启状态">
-          <template slot-scope="{row}">
-            <el-switch v-model="row.attr_enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
-          </template>
-        </el-table-column>
         <el-table-column align="center" prop="attribute_category_name" label="所属分类"></el-table-column>
+        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
         <el-table-column align="center" label="操作" width="120px" fixed="right">
           <template slot-scope="{row}">
             <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
@@ -128,10 +123,7 @@
         category: state => state.currentCategory,
         attributes: state => state.attributes,
         categories: state => state.attributeCategory,
-      }),
-      currentCategoryName() {
-        return this.currentCategory.name || '';
-      },
+      })
     },
     watch: {
       // 当分类改变的时候
@@ -180,7 +172,6 @@
       removeOne(payload) {
         const h = this.$createElement;
         const {model, name, id} = payload;
-        console.log(id, model)
         this.$msgbox({
           title: '温馨提示',
           message: h('p', null, [
@@ -220,25 +211,22 @@
        * event handler 监听编辑分类弹窗提交
        * @param form
        */
-      handleSubmit(form) {
-        let payload = Object.assign({}, form),
-          {text, model} = payload;
+      async handleSubmit(form) {
+        let payload = Object.assign({}, form);
+        let {text, model} = payload;
 
         delete payload.text;
 
-        this.handleAttributeApi({
-          method: 'edit',
-          payload
-        }).then(() => {
-          this.$notify({
-            type: "success",
-            message: text + '成功',
-          });
-
-          this.clearToast(model);
-          if (model === 'category') this.getAttributeCategory({reset: true});// 新增后，初始化currentCategory
-          else this.getAttributes({id: this.category.id});
-        })
+        // 修改类别
+        await this.handleAttributeApi({method: 'edit', payload});
+        this.$notify({
+          type: "success",
+          message: text + '成功',
+        });
+        if (model === 'category') { // 新增后，初始化currentCategory
+          this.getAttributeCategory({reset: true});
+        } else this.getAttributes({id: this.category.id});
+        this.clearToast(model);
       },
 
       handleChangeAttrEnabled(row) {
@@ -246,7 +234,6 @@
           id: row.id,
           text: '修改',
           model: 'attribute',
-          enabled: row.attr_enabled ? 1 : 0
         });
       },
     },

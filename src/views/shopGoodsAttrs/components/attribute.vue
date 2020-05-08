@@ -31,12 +31,6 @@
         <el-input-number v-model="form.sort_order" :min="0"></el-input-number>
       </el-form-item>
 
-      <el-form-item prop="enabled"
-                    label="是否开启"
-                    label-width="80px">
-        <el-switch size="small"
-                   v-model="form.enabled"></el-switch>
-      </el-form-item>
 
       <el-form-item>
         <div class="action">
@@ -67,13 +61,12 @@
             data: {
                 handler(nVal) {
                     if (nVal.id) {
-                        const {id, name, values, attr_enabled, sort_order, attribute_category_id} = nVal;
+                        const {id, name, values, sort_order, attribute_category_id} = nVal;
                         this.form = {
                             id,
                             name,
                             values,
                             sort_order,
-                            enabled: attr_enabled,
                             attribute_category_id
                         };
                     } else {
@@ -81,7 +74,6 @@
                             id: '',
                             name: '',
                             values: '',
-                            enabled: true,
                             sort_order: 0,
                             attribute_category_id: '',
                         }
@@ -96,7 +88,6 @@
                     id: '',
                     name: '',
                     values: '',
-                    enabled: true,
                     sort_order: 0,
                     attribute_category_id: '',
                 }
@@ -116,7 +107,7 @@
             submit() {
                 this.$refs.cate.validate(async valid => {
                     if (valid) {
-                        const {id, name, enabled, values, sort_order, attribute_category_id} = this.form;
+                        const {id, name, values, sort_order, attribute_category_id} = this.form;
 
                         this.$emit('submit', {
                             id,
@@ -126,7 +117,6 @@
                             values,
                             sort_order,
                             attribute_category_id,
-                            enabled: enabled ? 1 : 0
                         })
                     }
                 })
