@@ -51,9 +51,9 @@
 </template>
 
 <script>
-    import Empty from "../Empty";
-    import {getToken} from '../../utils/auth'
-    import {addGallery, sortGallery} from '../../api/goods';
+    import Empty from "../../../components/Empty";
+    import {getToken} from '../../../utils/auth'
+    import {addGallery, sortGallery} from '../../../api/goods';
     import draggable from 'vuedraggable';
 
     export default {
@@ -181,7 +181,7 @@
           height: 18px;
           cursor: pointer;
           display: block;
-          background: url("../GoodUpdate/close.png") no-repeat center center;
+          background: url("close.png") no-repeat center center;
           background-size: contain;
         }
 

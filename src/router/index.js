@@ -57,6 +57,12 @@ export const constantRoutes = [
         meta: {title: '用户列表', icon: 'user'}
       },
       {
+        path: 'goods-skus',
+        name: 'GoodsSkus',
+        component: () => import('@/views/shopGoodsSkus/index'),
+        meta: {title: '规格管理', icon: 'skus'}
+      },
+      {
         path: 'goods-cate',
         name: 'GoodsCate',
         component: () => import('@/views/shopGoodsCate/index'),

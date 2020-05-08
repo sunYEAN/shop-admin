@@ -4,9 +4,9 @@
     <div class="category_sup">
       <ul class="sup_list scroller">
         <li class="category_title">
+          (顶级分类，权重越小越靠前)
           <i class="el-icon-check success bold"></i>开启
           <i class="el-icon-close light bold"></i>关闭
-          (参数类别，权重越小越靠前)
         </li>
         <li class="category_item"
             @click="setCurrentCatalog(i)"
@@ -38,7 +38,7 @@
     <div class="category_sub">
       <div class="header">
         <div class="word">
-          <p>当前分类：</p>
+          <p>当前顶级分类：</p>
           <img :src="current.icon_url" alt="">
           <span>{{current.name}}</span>
         </div>
@@ -66,9 +66,7 @@
         <!--          <el-table-column align="center" prop="img_url"            label="图片(img_url)"></el-table-column>-->
         <el-table-column align="center" prop="type" width="100px" label="类型(type)"></el-table-column>
         <el-table-column align="center" prop="front_name" label="名称(front_name)"></el-table-column>
-        <el-table-column align="center" prop="keywords" label="关键词"></el-table-column>
         <el-table-column align="center" prop="front_desc" label="描述(front_desc)"></el-table-column>
-        <el-table-column align="center" prop="sort_order" width="100px" label="权重"></el-table-column>
 
 
         <el-table-column align="center" width="100px" label="开启状态">
@@ -335,7 +333,7 @@
         .category_title {
           color: #565656;
           font-size: 12px;
-          text-align: center;
+          text-align: left;
           line-height: 50px;
           padding-left: 26px;
           padding-right: 20px;
@@ -389,6 +387,7 @@
       border: 1px solid #EBEEF5;
       overflow: auto;
       margin-left: 6px;
+      padding-right: 10px;
       background-color: #ffffff;
 
       .header {

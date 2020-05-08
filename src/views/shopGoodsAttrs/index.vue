@@ -51,7 +51,13 @@
                 v-loading="options.loading">
         <el-table-column align="center" prop="id" width="100px" label="ID"></el-table-column>
         <el-table-column align="center" prop="attribute_category_name" label="所属分类"></el-table-column>
-        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
+
+        <el-table-column align="center" prop="name">
+          <template slot="header">
+            <span>参数名(name) <i class="el-icon-question"></i></span>
+          </template>
+        </el-table-column>
+
         <el-table-column align="center" label="操作" width="120px" fixed="right">
           <template slot-scope="{row}">
             <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
@@ -397,6 +403,7 @@
       overflow: auto;
       position: relative;
       margin-left: 6px;
+      padding-right: 10px;
       background-color: #ffffff;
       border: 1px solid #EBEEF5;
 
