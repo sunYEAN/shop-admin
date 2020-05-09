@@ -46,8 +46,8 @@
       </div>
       <el-table class="sub_table" stripe
                 :data="currentSubs" border>
-        <el-table-column align="center" prop="id" width="100px" label="id"></el-table-column>
-        <el-table-column align="center" prop="name" width="120px" label="参数名(name)"></el-table-column>
+        <el-table-column align="center" prop="id" label="id"></el-table-column>
+        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
 
 
         <el-table-column align="center" prop="wap_banner_url" width="150px" label="wap_banner_url">
@@ -56,7 +56,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" prop="parent_id" width="150px" label="父类(parent_id)">
+        <el-table-column align="center" prop="parent_id" label="父类(parent_id)">
           <template slot-scope="{row}">
             {{current.name}}-{{row.parent_id}}
           </template>
@@ -64,10 +64,7 @@
 
         <!--          <el-table-column align="center" prop="icon_url"           label="图标(icon_url)"></el-table-column>-->
         <!--          <el-table-column align="center" prop="img_url"            label="图片(img_url)"></el-table-column>-->
-        <el-table-column align="center" prop="type" width="100px" label="类型(type)"></el-table-column>
-        <el-table-column align="center" prop="front_name" label="名称(front_name)"></el-table-column>
-        <el-table-column align="center" prop="front_desc" label="描述(front_desc)"></el-table-column>
-
+        <el-table-column align="center" prop="type" label="类型(type)"></el-table-column>
 
         <el-table-column align="center" width="100px" label="开启状态">
           <template slot-scope="{row}">
@@ -75,7 +72,11 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" fixed="right" label="操作" width="120px">
+        <el-table-column align="center" prop="front_name" label="名称(front_name)"></el-table-column>
+        <el-table-column align="center" prop="front_desc" label="描述(front_desc)"></el-table-column>
+
+
+        <el-table-column align="center" fixed="right" label="操作">
           <template slot-scope="{row}">
             <a class="action edit" title="编辑" @click="setToast(row)">编辑</a>
             <a class="action delete" title="删除" @click="removeOne(row)">删除</a>

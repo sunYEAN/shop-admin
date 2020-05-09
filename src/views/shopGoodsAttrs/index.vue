@@ -44,7 +44,9 @@
         </div>
         <el-button class="sub_add" @click="setToast('attribute', {})" type="primary" size="small">新增</el-button>
       </div>
+
       <el-table class="sub_table"
+                size="small"
                 stripe
                 :data="attributes"
                 border
@@ -58,10 +60,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" label="操作" width="120px" fixed="right">
+        <el-table-column align="center" label="操作" fixed="right">
           <template slot-scope="{row}">
-            <a class="edit" title="编辑" @click="setToast('attribute', row)"><i class="el-icon-edit"></i></a>
-            <a class="delete" title="删除"><i class="el-icon-delete" @click="handleRemove('attribute',row)"></i></a>
+            <a class="edit" @click="setToast('attribute', row)">编辑</a>
+            <a class="delete" @click="handleRemove('attribute',row)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -290,6 +292,7 @@
 
   .delete {
     color: #d40f33;
+    margin-left: 16px;
   }
 
   .scroller {
@@ -359,9 +362,6 @@
             background-color: transparent;
           }
 
-          span {
-            font-size: 10px;
-          }
         }
 
         .category_item {
@@ -429,6 +429,7 @@
 
       .sub_table {
         border: none;
+        font-size: 14px;
         min-height: 100%;
         border-top: 1px solid #EBEEF5;
       }
