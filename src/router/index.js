@@ -44,18 +44,44 @@ export const constantRoutes = [
   },
 
   {
+    path: '/customer',
+    component: Layout,
+    children: [{
+      path: 'table',
+      name: 'customer',
+      component: () => import('@/views/shopGoodsUser/index'),
+      meta: {title: '用户管理', icon: 'user'}
+    }]
+  },
+
+  {
+    path: '/order',
+    component: Layout,
+    children: [{
+      path: 'table',
+      name: 'order',
+      component: () => import('@/views/shopOrder/index'),
+      meta: {title: '订单管理', icon: 'order'}
+    }]
+  },
+
+  {
+    path: '/goods',
+    component: Layout,
+    children: [{
+      path: 'table',
+      name: 'goods',
+      component: () => import('@/views/shopGoodsManage/index'),
+      meta: {title: '商品管理', icon: 'goods'}
+    }]
+  },
+
+  {
     path: '/shop',
     component: Layout,
-    redirect: '/shop/user',
     name: 'Shop',
-    meta: {title: '商城管理', icon: 'shop'},
+    meta: {title: '商城配置', icon: 'shop'},
     children: [
-      {
-        path: 'user',
-        name: 'UserTable',
-        component: () => import('@/views/shopGoodsUser/index'),
-        meta: {title: '用户列表', icon: 'user'}
-      },
       {
         path: 'goods-cate',
         name: 'GoodsCate',
@@ -68,12 +94,7 @@ export const constantRoutes = [
         component: () => import('@/views/shopGoodsAttrs/index'),
         meta: {title: '参数管理', icon: 'table'}
       },
-      {
-        path: 'goods-manage',
-        name: 'GoodsManage',
-        component: () => import('@/views/shopGoodsManage/index'),
-        meta: {title: '商品管理', icon: 'goods'}
-      },
+
       {
         path: 'edit',
         name: 'GoodsEdit',
@@ -87,12 +108,6 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/shopGoodsUpdate/index'),
         meta: {title: '修改商品', icon: 'tree'}
-      },
-      {
-        path: 'order',
-        name: 'Order',
-        component: () => import('@/views/shopOrder/index'),
-        meta: {title: '订单管理', icon: 'order'}
       },
       {
         path: 'collection',
@@ -162,76 +177,6 @@ export const constantRoutes = [
         component: () => import('@/views/miniProgram/design/index'),
         meta: {title: '页面设计', icon: 'design'}
       },
-    ]
-  },
-
-
-  // {
-  //   path: '/nested',
-  //   component: Layout,
-  //   redirect: '/nested/menu1',
-  //   name: 'Nested',
-  //   meta: {
-  //     title: '消息管理',
-  //     icon: 'nested'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'menu1',
-  //       component: () => import('@/views/nested/menu1/index'), // Parent router-view
-  //       name: 'Menu1',
-  //       meta: { title: 'Menu1' },
-  //       children: [
-  //         {
-  //           path: 'menu1-1',
-  //           component: () => import('@/views/nested/menu1/menu1-1'),
-  //           name: 'Menu1-1',
-  //           meta: { title: 'Menu1-1' }
-  //         },
-  //         {
-  //           path: 'menu1-2',
-  //           component: () => import('@/views/nested/menu1/menu1-2'),
-  //           name: 'Menu1-2',
-  //           meta: { title: 'Menu1-2' },
-  //           children: [
-  //             {
-  //               path: 'menu1-2-1',
-  //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-  //               name: 'Menu1-2-1',
-  //               meta: { title: 'Menu1-2-1' }
-  //             },
-  //             {
-  //               path: 'menu1-2-2',
-  //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-  //               name: 'Menu1-2-2',
-  //               meta: { title: 'Menu1-2-2' }
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           path: 'menu1-3',
-  //           component: () => import('@/views/nested/menu1/menu1-3'),
-  //           name: 'Menu1-3',
-  //           meta: { title: 'Menu1-3' }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: 'menu2',
-  //       component: () => import('@/views/nested/menu2/index'),
-  //       meta: { title: 'menu2' }
-  //     }
-  //   ]
-  // },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: {title: '商城装扮', icon: 'link'}
-      }
     ]
   },
   {
