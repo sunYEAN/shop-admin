@@ -4,7 +4,7 @@
 </template>
 
 <script>
-  import {GoodAlbum, GoodsAttr} from '../../components/GoodUpdate';
+  import {GoodAlbum, GoodsAttr} from '../shopGoodsUpdate/components';
 export default {
   components: {
     GoodsAttr,

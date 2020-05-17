@@ -73,7 +73,7 @@
         height: 18px;
         cursor: pointer;
         display: block;
-        background: url("../GoodUpdate/close.png") no-repeat center center;
+        background: url("close.png") no-repeat center center;
         background-size: contain;
       }
 

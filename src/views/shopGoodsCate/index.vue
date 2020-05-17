@@ -4,16 +4,16 @@
     <div class="category_sup">
       <ul class="sup_list scroller">
         <li class="category_title">
+          (顶级分类，权重越小越靠前)
           <i class="el-icon-check success bold"></i>开启
           <i class="el-icon-close light bold"></i>关闭
-          (参数类别，权重越小越靠前)
         </li>
         <li class="category_item"
             @click="setCurrentCatalog(i)"
             :class="{active: current.id === i.id}"
             v-for="i in computedSup" :key="i.id">
           <span>
-            <i v-if="i.enabled" class="el-icon-check success bold"></i>
+            <i v-if="i.is_show" class="el-icon-check success bold"></i>
             <i v-else class="el-icon-close light bold"></i>
             {{i.name}}
             <i style="color: #999;font-style: normal;">（权重：{{i.sort_order}}）</i>
@@ -38,16 +38,16 @@
     <div class="category_sub">
       <div class="header">
         <div class="word">
-          <p>当前分类：</p>
+          <p>当前顶级分类：</p>
           <img :src="current.icon_url" alt="">
           <span>{{current.name}}</span>
         </div>
-        <el-button class="sub_add" @click="setToast()" type="primary" size="small">新增</el-button>
+        <el-button class="sub_add" @click="setToast({parent_id: current.id})" type="primary" size="small">新增</el-button>
       </div>
       <el-table class="sub_table" stripe
                 :data="currentSubs" border>
-        <el-table-column align="center" prop="id" width="100px" label="id"></el-table-column>
-        <el-table-column align="center" prop="name" width="120px" label="参数名(name)"></el-table-column>
+        <el-table-column align="center" prop="id" label="id"></el-table-column>
+        <el-table-column align="center" prop="name" label="参数名(name)"></el-table-column>
 
 
         <el-table-column align="center" prop="wap_banner_url" width="150px" label="wap_banner_url">
@@ -56,7 +56,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="center" prop="parent_id" width="150px" label="父类(parent_id)">
+        <el-table-column align="center" prop="parent_id" label="父类(parent_id)">
           <template slot-scope="{row}">
             {{current.name}}-{{row.parent_id}}
           </template>
@@ -64,20 +64,19 @@
 
         <!--          <el-table-column align="center" prop="icon_url"           label="图标(icon_url)"></el-table-column>-->
         <!--          <el-table-column align="center" prop="img_url"            label="图片(img_url)"></el-table-column>-->
-        <el-table-column align="center" prop="type" width="100px" label="类型(type)"></el-table-column>
-        <el-table-column align="center" prop="front_name" label="名称(front_name)"></el-table-column>
-        <el-table-column align="center" prop="keywords" label="关键词"></el-table-column>
-        <el-table-column align="center" prop="front_desc" label="描述(front_desc)"></el-table-column>
-        <el-table-column align="center" prop="sort_order" width="100px" label="权重"></el-table-column>
-
+        <el-table-column align="center" prop="type" label="类型(type)"></el-table-column>
 
         <el-table-column align="center" width="100px" label="开启状态">
           <template slot-scope="{row}">
-            <el-switch v-model="row.enabled" @change="handleChangeAttrEnabled(row)"></el-switch>
+            <el-switch v-model="row.is_show" @change="handleChangeAttrEnabled(row)"></el-switch>
           </template>
         </el-table-column>
 
-        <el-table-column align="center" fixed="right" label="操作" width="120px">
+        <el-table-column align="center" prop="front_name" label="名称(front_name)"></el-table-column>
+        <el-table-column align="center" prop="front_desc" label="描述(front_desc)"></el-table-column>
+
+
+        <el-table-column align="center" fixed="right" label="操作">
           <template slot-scope="{row}">
             <a class="action edit" title="编辑" @click="setToast(row)">编辑</a>
             <a class="action delete" title="删除" @click="removeOne(row)">删除</a>
@@ -143,7 +142,7 @@
       },
     },
     watch: {
-      catalogs (nVal) {
+      catalogs(nVal) {
         this.setCurrentCatalog(nVal[0] || {});
       }
     },
@@ -210,6 +209,7 @@
        */
       handleSubmit(form) {
         let payload = Object.assign({}, form);
+        payload.is_show = payload.is_show ? 1 : 0;
         this.handleApiMethods({
           method: 'storeGoodCategory',
           payload
@@ -225,10 +225,7 @@
       },
 
       handleChangeAttrEnabled(row) {
-        this.handleSubmit({
-          ...row,
-          enabled: row.enabled ? 1 : 0
-        });
+        this.handleSubmit(row);
       },
     },
     mounted() {
@@ -299,13 +296,15 @@
       flex-shrink: 0;
       border-right: 1px solid #e9e9e9;
       background-color: #ffffff;
-      .sup_add{
+
+      .sup_add {
         left: 50%;
         border: none !important;
         bottom: 10px;
         margin: 0;
         padding: 0;
         position: absolute;
+
         &:hover {
           background-color: transparent;
 
@@ -335,7 +334,7 @@
         .category_title {
           color: #565656;
           font-size: 12px;
-          text-align: center;
+          text-align: left;
           line-height: 50px;
           padding-left: 26px;
           padding-right: 20px;
@@ -389,17 +388,21 @@
       border: 1px solid #EBEEF5;
       overflow: auto;
       margin-left: 6px;
+      padding-right: 10px;
       background-color: #ffffff;
-      .header{
+
+      .header {
         display: flex;
         padding: 0 10px;
         align-items: center;
         justify-content: space-between;
-        .word{
+
+        .word {
           color: #999;
           display: flex;
           align-items: center;
-          >img{
+
+          > img {
             width: 16px;
             height: 16px;
             display: block;
@@ -407,12 +410,14 @@
           }
         }
       }
-      .sub_add{
+
+      .sub_add {
         margin-top: 16px;
         margin-right: 35px;
         margin-bottom: 16px;
       }
-      .sub_table{
+
+      .sub_table {
         border: none;
         border-top: 1px solid #EBEEF5;
       }

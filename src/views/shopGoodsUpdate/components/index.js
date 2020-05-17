@@ -1,7 +1,8 @@
+import GoodsSpec from './GoodsSkus';
 import GoodsAlbum from './GoodsAlbum';
 import GoodsAttribute from './GoodsAttribute';
 import GoodsEditor from './GoodsEditor';
-import '../../assets/update.css';
+import '../../../assets/update.css';
 
 function WithBaseCard(Component) {
   return {
@@ -49,10 +50,12 @@ function WithBaseCard(Component) {
 const GoodAlbum = WithBaseCard(GoodsAlbum);
 const GoodAttr = WithBaseCard(GoodsAttribute);
 const GoodDetailEditor = WithBaseCard(GoodsEditor);
+const GoodSkus = WithBaseCard(GoodsSpec);
 
 
 export {
   GoodAlbum,
   GoodAttr,
+  GoodSkus,
   GoodDetailEditor
 };

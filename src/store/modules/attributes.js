@@ -36,7 +36,7 @@ const actions = {
       return attributesApi.getAttributeCategory().then(res => {
         const {data} = res;
         data.forEach(i => {
-          i.cate_enabled = !!i.cate_enabled;
+          i.enabled = !!i.enabled;
         });
         commit('SET_ATTRIBUTE_CATEGORY', data);
       })
@@ -62,7 +62,7 @@ const actions = {
     })
   },
 
-  handleAttributeApi({}, {
+  handleAttributeApi({commit}, {
     method,
     payload
   }) {

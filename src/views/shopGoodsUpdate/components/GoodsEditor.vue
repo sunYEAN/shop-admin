@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import TinyEditor from "../TinyEditor/index";
+  import TinyEditor from "../../../components/TinyEditor";
     export default {
         name: "GoodsEditor",
         components: {TinyEditor},
@@ -29,6 +29,6 @@
 <style scoped lang="less">
   .good-detail{
     width: 60%;
-    margin: 10vh auto 20px;
+    margin: 5vh auto;
   }
 </style>

@@ -26,6 +26,11 @@
         <el-input type="textarea" ref="input" size="small" v-model="form.front_desc" placeholder="请输入front_desc"></el-input>
       </el-form-item>
 
+
+      <el-form-item prop="name" label="关键词：" label-width="100px">
+        <el-input ref="input" size="small" v-model="form.keywords" clearable placeholder="请输入关键词"></el-input>
+      </el-form-item>
+
       <!--   upload   -->
       <el-form-item v-if="!form.parent_id" prop="img_url" label="img_url：" label-width="100px">
         <image-upload :url.sync="form.img_url"></image-upload>
@@ -45,16 +50,12 @@
 
       <!--   upload end   -->
 
-      <el-form-item prop="name" label="关键词：" label-width="100px">
-        <el-input ref="input" size="small" v-model="form.keywords" clearable placeholder="请输入关键词"></el-input>
-      </el-form-item>
-
       <el-form-item class="number" prop="sort_order" label="排序权重：" label-width="100px">
         <el-input-number :min="0" size="small" v-model="form.sort_order"></el-input-number>
       </el-form-item>
 
       <el-form-item prop="enabled" label="是否开启：" label-width="100px">
-        <el-switch size="small" v-model="form.enabled"></el-switch>
+        <el-switch size="small" v-model="form.is_show"></el-switch>
       </el-form-item>
 
       <el-form-item>
@@ -98,8 +99,8 @@
                             front_name: '',
                             front_desc: '',
                             keywords: '',
-                            enabled: true,
-                            parent_id: 0,
+                            is_show: true,
+                            parent_id: nVal.parent_id || 0,
                             sort_order: 0,
                             img_url: '',
                             icon_url: '',
@@ -122,7 +123,7 @@
                     front_name: '',
                     front_desc: '',
                     keywords: '',
-                    enabled: true,
+                    is_show: true,
                     parent_id: 0,
                     sort_order: 0,
                     img_url: '',
@@ -154,7 +155,6 @@
                     if (valid) {
                         this.$emit('submit', {
                             ...this.form,
-                            enabled: this.form.enabled ? 1 : 0
                         })
                     }
                 })
