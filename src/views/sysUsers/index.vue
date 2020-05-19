@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
+    <el-table v-if="">
+      <el-table-column></el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script>
-  import {GoodAlbum, GoodsAttr} from '../shopGoodsUpdate/components';
 export default {
   components: {
-    GoodsAttr,
-    GoodAlbum
   },
   data() {
     return {

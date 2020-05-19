@@ -134,7 +134,7 @@ export const constantRoutes = [
       {
         path: 'user-auth',
         name: 'UserAuth',
-        component: () => import('@/views/sysUserAuth/index'),
+        component: () => import('@/views/sysUsers/index'),
         meta: {title: '角色管理', icon: 'admin'}
       },
       {

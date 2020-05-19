@@ -25,3 +25,14 @@ export function logout() {
     method: 'post'
   })
 }
+
+
+/**
+ * 获取该系统授权用户列表
+ */
+export function getAdminList() {
+  return request({
+    url: '/admin/admin',
+    method: 'get',
+  })
+}
